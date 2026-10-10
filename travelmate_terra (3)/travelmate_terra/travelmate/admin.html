@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TravelMate — Admin Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nav:#0E1622;--nav-2:#18222F;--nav-line:#22303F;--nav-txt:#9BA9B8;--nav-on:#fff;
+  --blue:#0770E3;--blue-l:#0194F3;--blue-bg:#EAF4FE;
+  --orange:#FF5E1F;--green:#00A651;--red:#E5330B;--amber:#F0A500;
+  --ink:#0F1620;--ink-2:#5A6673;--ink-3:#8D97A2;--line:#E3E8ED;--bg:#F4F6F9;
+  --sh:0 1px 2px rgba(15,22,32,.06),0 1px 3px rgba(15,22,32,.04);
+  --sh-md:0 6px 20px rgba(15,22,32,.10);--sh-lg:0 20px 50px rgba(15,22,32,.22);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:13.5px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:13px}
+a{color:var(--blue);text-decoration:none}
+svg.i{width:1em;height:1em;fill:currentColor;flex:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#C9D2DB;border-radius:6px;border:3px solid var(--bg)}
+
+.shell{display:flex;min-height:100vh}
+.rail{width:236px;flex:none;background:var(--nav);color:var(--nav-txt);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:10px;padding:18px 18px 16px;border-bottom:1px solid var(--nav-line)}
+.brand .mk{width:30px;height:30px;border-radius:8px;background:var(--blue-l);color:#fff;display:grid;place-items:center;font-size:16px;font-weight:800}
+.brand b{color:#fff;font-size:14.5px;letter-spacing:-.2px;display:block;line-height:1.2}
+.brand small{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#6B7A8A}
+.grp{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#5D6B7A;padding:16px 18px 6px;font-weight:700}
+.nav{display:flex;align-items:center;gap:10px;width:100%;padding:9px 18px;font-size:13px;font-weight:500;border-left:3px solid transparent;text-align:left}
+.nav svg{font-size:15px;opacity:.85}
+.nav:hover{background:var(--nav-2);color:#fff}
+.nav.on{background:var(--nav-2);color:#fff;border-left-color:var(--blue-l);font-weight:600}
+.nav .cnt{margin-left:auto;font-size:10.5px;font-weight:700;background:#243141;color:#9BA9B8;padding:1px 7px;border-radius:99px;min-width:22px;text-align:center}
+.nav.on .cnt{background:var(--blue);color:#fff}
+.nav .cnt.alert{background:var(--red);color:#fff}
+.nav .chev{margin-left:8px;font-size:11px;opacity:.7;transition:transform .15s}
+.nav .chev.up{transform:rotate(180deg)}
+.subm{background:#0A111A;padding:4px 0 8px;border-left:3px solid var(--nav-line)}
+.subm .sl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#4F5D6C;padding:8px 18px 3px 44px;font-weight:700}
+.sbtn{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:6px 16px 6px 44px;font-size:12px;color:var(--nav-txt);font-weight:500}
+.sbtn::before{content:"";width:6px;height:6px;border-radius:50%;border:1.5px solid #3A4A5B;flex:none}
+.sbtn:hover{color:#fff;background:var(--nav-2)}
+.sbtn.on{color:#fff;font-weight:600}
+.sbtn.on::before{background:var(--blue-l);border-color:var(--blue-l)}
+.sbtn .sc{margin-left:auto;font-size:10.5px;color:#6B7A8A}
+.rail .end{margin-top:auto;padding:14px 18px;border-top:1px solid var(--nav-line);font-size:11.5px;color:#6B7A8A}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{background:#fff;border-bottom:1px solid var(--line);padding:14px 26px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:30}
+.top h1{margin:0;font-size:19px;font-weight:800;letter-spacing:-.4px}
+.top p{margin:2px 0 0;font-size:12px;color:var(--ink-3)}
+.top .sp{flex:1}
+.chip{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:4px 12px 4px 4px;font-size:12px;font-weight:600}
+.chip .av{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:10.5px;font-weight:700}
+.body{padding:22px 26px 60px}
+
+.panel{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh);overflow:hidden}
+.ph{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.ph h4{margin:0;font-size:13.5px;font-weight:700;letter-spacing:-.1px}
+.ph .sp{flex:1}
+.pb{padding:16px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.row{display:flex;align-items:center;gap:10px}
+.tiny{font-size:11.5px;color:var(--ink-3)}
+.divider{height:1px;background:var(--line);margin:12px 0}
+.rowsp{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12.5px;gap:10px}
+.rowsp b{font-weight:700}
+
+.kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:15px 16px;box-shadow:var(--sh)}
+.kpi .lb{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+.kpi b{display:block;font-size:26px;font-weight:800;letter-spacing:-.8px;margin:5px 0 3px;line-height:1}
+.kpi .sub{font-size:11.5px;color:var(--ink-2)}
+.kpi.warn{border-left:3px solid var(--amber)}
+.kpi.bad{border-left:3px solid var(--red)}
+.kpi.good{border-left:3px solid var(--green)}
+
+.btn{border-radius:7px;padding:8px 14px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;border:1px solid transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.b-pri{background:var(--blue);color:#fff}
+.b-pri:hover:not(:disabled){background:#0A5FBF}
+.b-org{background:var(--orange);color:#fff}
+.b-org:hover:not(:disabled){background:#E64A0E}
+.b-out{border-color:var(--line);background:#fff;color:var(--ink-2)}
+.b-out:hover:not(:disabled){background:#F6F8FA;color:var(--ink)}
+.b-blue{border-color:#B7DBFB;background:#fff;color:var(--blue)}
+.b-blue:hover:not(:disabled){background:var(--blue-bg)}
+.b-red{border-color:#F5C3BA;background:#fff;color:var(--red)}
+.b-red:hover:not(:disabled){background:#FEF2F0}
+.b-sm{padding:5px 10px;font-size:11.5px;border-radius:6px}
+.b-full{width:100%}
+.inp{width:100%;border:1px solid var(--line);border-radius:7px;padding:8px 11px;background:#fff;color:var(--ink)}
+.inp:focus{outline:2px solid #C7E4FC;border-color:var(--blue-l)}
+.inp.sm{padding:6px 9px;font-size:12px}
+.lb{display:block;font-size:11.5px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+.frm{display:grid;gap:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.err{color:var(--red);font-size:11.5px;font-weight:600;margin-top:5px}
+.hint{font-size:11px;color:var(--ink-3);margin-top:4px}
+.bar-tools{display:flex;gap:9px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.bar-tools .sp{flex:1}
+.search{position:relative;min-width:230px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-size:14px}
+.search input{padding-left:31px}
+.seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff}
+.seg button{padding:7px 13px;font-size:12px;font-weight:600;color:var(--ink-2);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--blue);color:#fff}
+
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px;background:#EEF2F6;color:var(--ink-2);white-space:nowrap}
+.tag.blue{background:var(--blue-bg);color:#0A5FBF}
+.tag.green{background:#E4F7EE;color:#00713A}
+.tag.amber{background:#FEF4E0;color:#96650A}
+.tag.red{background:#FDECE9;color:#AE2510}
+.tag.dot::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.mono{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:11.5px;color:var(--ink-2)}
+.money{font-weight:700;color:var(--orange)}
+.stars{color:var(--amber);letter-spacing:-1px}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;flex:none;background:#DCE7F2;color:#255B8C}
+
+.scroll{overflow-x:auto}
+table.dt{width:100%;border-collapse:collapse;background:#fff}
+table.dt th{background:#F8FAFC;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);padding:10px 14px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}
+table.dt td{padding:11px 14px;border-bottom:1px solid #F1F4F7;font-size:12.5px;vertical-align:middle}
+table.dt tr:last-child td{border-bottom:0}
+table.dt tbody tr:hover{background:#FBFCFD}
+table.dt tr.flag{background:#FFF9F8}
+table.dt tr.flag:hover{background:#FEF3F1}
+.acts{display:flex;gap:6px;justify-content:flex-end}
+.thumb{width:42px;height:34px;border-radius:6px;display:grid;place-items:center;flex:none;color:rgba(255,255,255,.9);font-size:15px}
+.beach{background:linear-gradient(150deg,#2BB3D6,#7FD9E8 45%,#F3E2B8)}
+.pine{background:linear-gradient(150deg,#2E6B4F,#79B98C 60%,#D9E8C8)}
+.food{background:linear-gradient(150deg,#C2410C,#F59E42 55%,#FFE0B8)}
+.ramen{background:linear-gradient(150deg,#9C1B1B,#E05C4A 55%,#FFD3C2)}
+.temple{background:linear-gradient(150deg,#6D3C9E,#B07BD6 55%,#F0DCF7)}
+.falls{background:linear-gradient(150deg,#0E6E82,#38B0C4 55%,#C9EEF2)}
+.city{background:linear-gradient(150deg,#334B72,#7A94C4 55%,#DCE5F5)}
+.sun{background:linear-gradient(150deg,#B45309,#F0A24E 55%,#FDE7C4)}
+.leaf{background:linear-gradient(150deg,#3F6212,#8DBF4A 55%,#E6F0CE)}
+.rose{background:linear-gradient(150deg,#9D174D,#E0699A 55%,#FBD9E7)}
+.empty{text-align:center;padding:40px 20px;color:var(--ink-2)}
+.empty svg{font-size:30px;color:#C6D0D9;margin-bottom:9px}
+.empty b{display:block;font-size:14px;color:var(--ink);margin-bottom:4px}
+
+.cols{display:flex;align-items:flex-end;gap:12px;height:170px;padding-top:20px}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:6px}
+.col .v{font-size:11px;font-weight:700;color:var(--ink-2)}
+.col .b{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--blue-l),var(--blue));min-height:3px}
+.col .k{font-size:10.5px;color:var(--ink-3);font-weight:600}
+.hb{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:12.5px}
+.hb .n{width:118px;flex:none;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .t{flex:1;height:7px;border-radius:4px;background:#EDF1F5;overflow:hidden}
+.hb .t i{display:block;height:100%;border-radius:4px;background:var(--blue-l)}
+.hb .t i.green{background:var(--green)}.hb .t i.amber{background:var(--amber)}.hb .t i.red{background:var(--red)}
+.hb .v{width:66px;text-align:right;font-weight:700;font-size:12px}
+.donut{width:132px;height:132px;border-radius:50%;flex:none;display:grid;place-items:center;position:relative}
+.donut::after{content:"";position:absolute;width:84px;height:84px;border-radius:50%;background:#fff}
+.donut .mid{position:relative;z-index:1;text-align:center}
+.donut .mid b{display:block;font-size:21px;font-weight:800;letter-spacing:-.5px}
+.donut .mid small{font-size:10px;color:var(--ink-3)}
+.legend{display:grid;gap:7px}
+.legend div{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.legend i{width:9px;height:9px;border-radius:3px;flex:none}
+
+.ovl{position:fixed;inset:0;background:rgba(10,18,28,.55);display:grid;place-items:center;z-index:200;padding:20px}
+.modal{background:#fff;border-radius:12px;box-shadow:var(--sh-lg);width:100%;max-width:520px;max-height:88vh;display:flex;flex-direction:column}
+.modal .mh{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.modal .mh h4{margin:0;font-size:16px;font-weight:800;flex:1}
+.modal .mb{padding:18px;overflow:auto}
+.modal .mf{padding:13px 18px;border-top:1px solid var(--line);display:flex;gap:9px;justify-content:flex-end;background:#FAFBFC;border-radius:0 0 12px 12px}
+.toasts{position:fixed;right:20px;bottom:20px;z-index:300;display:flex;flex-direction:column;gap:9px;align-items:flex-end}
+.toast{background:var(--ink);color:#fff;border-radius:9px;padding:11px 15px;font-size:12.5px;box-shadow:var(--sh-lg);max-width:330px;display:flex;gap:9px;align-items:flex-start;animation:pop .2s ease}
+.toast.good{background:#04703A}.toast.bad{background:#9E2213}
+.toast small{display:block;opacity:.85;font-size:11px;margin-top:2px}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.gate{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(900px 500px at 50% -5%,#17385F,#0E1622)}
+.gbox{background:#fff;border-radius:14px;box-shadow:var(--sh-lg);width:100%;max-width:380px;padding:26px}
+.gbox .bd{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.gbox .bd .mk{width:34px;height:34px;border-radius:9px;background:var(--blue-l);color:#fff;display:grid;place-items:center;font-size:17px;font-weight:800}
+.gbox h3{margin:0;font-size:16px;font-weight:800}
+.gbox .bd small{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+
+@media (max-width:1080px){.g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}}
+@media (max-width:820px){
+  .rail{position:fixed;left:-240px;z-index:100;transition:left .2s}
+  .rail.open{left:0}
+  .body{padding:16px}.top{padding:12px 16px}
+  .two,.three{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<symbol id="grid" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/></symbol>
+<symbol id="chart" viewBox="0 0 24 24"><path d="M4 20V10h4v10H4zm6 0V4h4v16h-4zm6 0v-7h4v7h-4z"/></symbol>
+<symbol id="user" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6z"/></symbol>
+<symbol id="bed" viewBox="0 0 24 24"><path d="M4 5v9H2v6h2v-2h16v2h2v-6h-2V5H4zm2 2h5v3H6V7zm7 0h5v3h-5V7zM4 12h16v2H4v-2z"/></symbol>
+<symbol id="fork" viewBox="0 0 24 24"><path d="M7 2v7a2 2 0 002 2v11h2V11a2 2 0 002-2V2h-1.5v6h-1V2h-1v6h-1V2H7zm9 0c-1.4 1.2-2 3.3-2 5.5 0 1.9.7 3.2 2 3.5V22h2V2h-2z"/></symbol>
+<symbol id="ticket" viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H5a2 2 0 01-2-2v-3a2 2 0 000-4V7zm11 0h-2v2h2V7zm0 4h-2v2h2v-2zm0 4h-2v2h2v-2z"/></symbol>
+<symbol id="cal" viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2V2h-2v2H9V2H7zM5 9h14v11H5V9z"/></symbol>
+<symbol id="map" viewBox="0 0 24 24"><path d="M15 4l6-2v16l-6 2-6-2-6 2V4l6-2 6 2zm-1 2.3L10 5v12.7l4 1.3V6.3z"/></symbol>
+<symbol id="star" viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .9-5 4.9 1.2 7L12 18l-6.2 3.3L7 14.3l-5-4.9 7-.9L12 2z"/></symbol>
+<symbol id="chat" viewBox="0 0 24 24"><path d="M4 3h16a2 2 0 012 2v10a2 2 0 01-2 2H9l-5 4V5a2 2 0 012-2zm3 5v2h10V8H7zm0 4v2h7v-2H7z"/></symbol>
+<symbol id="photo" viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2 12h12l-4-5-3 4-2-2.5L6 16zm2.5-7a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></symbol>
+<symbol id="db" viewBox="0 0 24 24"><path d="M12 2c4.4 0 8 1.3 8 3v14c0 1.7-3.6 3-8 3s-8-1.3-8-3V5c0-1.7 3.6-3 8-3zm0 2C8.1 4 6 5 6 5.2S8.1 6.5 12 6.5 18 5.4 18 5.2 15.9 4 12 4zM6 8v3.3c0 .2 2.1 1.2 6 1.2s6-1 6-1.2V8c-1.5.7-3.7 1-6 1s-4.5-.3-6-1zm0 6v3.3c0 .2 2.1 1.2 6 1.2s6-1 6-1.2V14c-1.5.7-3.7 1-6 1s-4.5-.3-6-1z"/></symbol>
+<symbol id="shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.7-8 11-4.6-1.3-8-6-8-11V5l8-3zm-1 12.5l6-6-1.4-1.4L11 11.7 8.4 9.1 7 10.5l4 4z"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><path d="M10 2a8 8 0 105 14.3l5.3 5.3 1.4-1.4-5.3-5.3A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"/></symbol>
+<symbol id="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></symbol>
+<symbol id="x" viewBox="0 0 24 24"><path d="M18.3 5.7L12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7l-1.4-1.4L9.2 12 2.9 5.7l1.4-1.4 6.3 6.3 6.3-6.3z"/></symbol>
+<symbol id="trash" viewBox="0 0 24 24"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 12H7L6 9z"/></symbol>
+<symbol id="edit" viewBox="0 0 24 24"><path d="M3 17.2V21h3.8L18 9.8 14.2 6 3 17.2zM20.7 7.1a1 1 0 000-1.4l-2.4-2.4a1 1 0 00-1.4 0l-1.8 1.8L18.9 8.9l1.8-1.8z"/></symbol>
+<symbol id="eye" viewBox="0 0 24 24"><path d="M12 5c-5 0-9 4.4-10 7 1 2.6 5 7 10 7s9-4.4 10-7c-1-2.6-5-7-10-7zm0 11a4 4 0 110-8 4 4 0 010 8zm0-2a2 2 0 100-4 2 2 0 000 4z"/></symbol>
+<symbol id="eyeoff" viewBox="0 0 24 24"><path d="M2.4 3.8l1.4-1.4 17.8 17.8-1.4 1.4-3.3-3.3A11 11 0 0112 19c-5 0-9-4.4-10-7a13 13 0 014.3-5.3L2.4 3.8zM12 7a4 4 0 013.9 4.9l-4.8-4.8A4 4 0 0112 7zm10 5c-.7 1.8-3.1 4.8-6.3 6.2l-2-2A4 4 0 0012 8l-2-2A11 11 0 0112 5c5 0 9 4.4 10 7z"/></symbol>
+<symbol id="out" viewBox="0 0 24 24"><path d="M10 3H5a2 2 0 00-2 2v14a2 2 0 002 2h5v-2H5V5h5V3zm6.2 3.8l-1.4 1.4L17.6 11H9v2h8.6l-2.8 2.8 1.4 1.4L21.4 12l-5.2-5.2z"/></symbol>
+<symbol id="down" viewBox="0 0 24 24"><path d="M12 16l-6-6h4V3h4v7h4l-6 6zM5 19h14v2H5v-2z"/></symbol>
+<symbol id="menu" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></symbol>
+<symbol id="chev" viewBox="0 0 24 24"><path d="M7.4 8.6L12 13.2l4.6-4.6L18 10l-6 6-6-6 1.4-1.4z"/></symbol>
+<symbol id="pin" viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5.3 7 13 7 13s7-7.7 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></symbol>
+</svg>
+<div id="app"></div>
+<div id="layer"></div>
+<div class="toasts" id="toasts"></div>
+
+<script src="data.js"></script>
+<script src="db.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="sb-admin.js"></script>
+<script>
+
+const KEY=TMDB.KEY;
+let DB,LAST="";
+function load(){DB=TMDB.read();LAST=localStorage.getItem(KEY)||"";}
+function save(){try{const t=JSON.stringify(DB);localStorage.setItem(KEY,t);LAST=t;if(window.SBR)SBR.push();}catch(e){toast("Storage is full, so this change was not saved","bad");}}
+function fresh(){DB=TMDB.read();}
+function nextId(t,pre,w){fresh();const pk=SCHEMA[t].pk;let m=0;DB[t].forEach(r=>{const n=parseInt(String(r[pk]).replace(/\D/g,""),10);if(!isNaN(n)&&n>m)m=n;});return pre+String(m+1).padStart(w,"0");}
+function log(sql){DB._log.unshift({t:new Date().toISOString().slice(11,19),sql});if(DB._log.length>250)DB._log.pop();}
+function audit(action,target,detail){
+  fresh();
+  DB._audit.unshift({At:new Date().toISOString().slice(0,19).replace("T"," "),By:(me()||{}).UserName||"—",Action:action,Target:target||"—",Detail:detail||""});
+  if(DB._audit.length>400)DB._audit.pop();save();
+}
+function insert(t,row){fresh();DB[t].push(row);log("INSERT INTO "+t+" …");save();return row;}
+function update(t,id,patch){fresh();const pk=SCHEMA[t].pk,r=DB[t].find(x=>x[pk]===id);if(!r)return null;Object.assign(r,patch);log("UPDATE "+t+" SET "+Object.keys(patch).join(", ")+" WHERE "+pk+" = '"+id+"';");save();return r;}
+function remove(t,id){fresh();const pk=SCHEMA[t].pk,i=DB[t].findIndex(x=>x[pk]===id);if(i<0)return false;DB[t].splice(i,1);log("DELETE FROM "+t+" WHERE "+pk+" = '"+id+"';");save();return true;}
+function sel(t,fn){return DB[t].filter(fn||(()=>true));}
+function one(t,id){const pk=SCHEMA[t].pk;return DB[t].find(x=>x[pk]===id)||null;}
+function me(){return DB._session?one("USERS",DB._session):null;}
+function isAdmin(){const u=me();return !!u&&u.Role==="Administrator";}
+
+const TKEY=KEY+":traffic";
+let TLAST=(()=>{try{return localStorage.getItem(TKEY)||"";}catch(e){return "";}})();
+function TR(){let t=null;try{t=JSON.parse(localStorage.getItem(TKEY));}catch(e){}
+  t=t&&typeof t==="object"?t:{};["visits","logins"].forEach(k=>{if(!Array.isArray(t[k]))t[k]=[];});
+  if(!t.live||typeof t.live!=="object")t.live={};return t;}
+function trSave(t){try{localStorage.setItem(TKEY,JSON.stringify(t));TLAST=localStorage.getItem(TKEY);}catch(e){}}
+function trLogin(email,u,ok){if(window.SBR)SBR.logLogin(email,u,ok);const t=TR();
+  t.logins.unshift({At:new Date().toISOString(),UserID:u?u.UserID:"",UserName:u?u.UserName:"",Email:email,Role:u?u.Role:"",Result:ok?"success":"failed",Source:"admin"});
+  if(ok)t.lastSession=u.UserID;if(t.logins.length>1000)t.logins.length=1000;trSave(t);}
+function syncTraffic(){let r="";try{r=localStorage.getItem(TKEY)||"";}catch(e){return;}
+  if(r===TLAST)return;TLAST=r;if(isAdmin()&&(VIEW==="traffic"||VIEW==="dashboard"))scheduleRender();}
+function lday(d){d=d===undefined?new Date():new Date(d);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function pageName(p){p=String(p||"").replace(/\.html?$/,"");return(p===""||p==="index")?"Home":p.charAt(0).toUpperCase()+p.slice(1);}
+function lastLogin(uid){const l=TR().logins.find(x=>x.UserID===uid&&x.Result==="success");return l?fdt(l.At):'<span class="tiny">never</span>';}
+function loginCount(uid){return TR().logins.filter(x=>x.UserID===uid&&x.Result==="success").length;}
+function tStats(days){
+  const t=TR(),now=Date.now(),keys=[],vd={},lg={};
+  for(let i=days-1;i>=0;i--)keys.push(lday(now-i*864e5));
+  keys.forEach(k=>{vd[k]=0;lg[k]=0;});
+  const from=keys[0],td=lday();
+  const pv=t.visits.filter(v=>lday(v.At)>=from);
+  pv.forEach(v=>{const k=lday(v.At);if(k in vd)vd[k]++;});
+  const ok=t.logins.filter(l=>l.Result==="success"&&lday(l.At)>=from);
+  const bad=t.logins.filter(l=>l.Result==="failed"&&lday(l.At)>=from);
+  ok.forEach(l=>{const k=lday(l.At);if(k in lg)lg[k]++;});
+  const tv=t.visits.filter(v=>lday(v.At)===td);
+  return{t,keys,vd,lg,pv,ok,bad,uniq:new Set(pv.map(v=>v.Vid)).size,
+    todayV:tv.length,todayU:new Set(tv.map(v=>v.Vid)).size,
+    todayL:t.logins.filter(l=>l.Result==="success"&&lday(l.At)===td).length,
+    online:Object.values(t.live).filter(x=>x.at>now-45000)};
+}
+function trafficKpis(){const s=tStats(14);
+  return '<div class="grid g4" style="margin-bottom:16px">'+
+   kpi("Website visits",s.t.visits.length,s.todayV+" today · "+s.todayU+" unique visitors")+
+   kpi("Logins (14 days)",s.ok.length,s.todayL+" today · "+s.bad.length+" failed",s.bad.length>5?"warn":"")+
+   kpi("Online now",s.online.length,s.online.length?"browsing right now":"nobody on the site",s.online.length?"good":"")+
+   kpi("Unique visitors (14 days)",s.uniq,'<a href="#" onclick="nav(\'traffic\');return false">Open full report</a>')+'</div>';}
+function vTraffic(){
+  const days=Number(F.range)||14,s=tStats(days),q=F.q.toLowerCase();
+  const pages={};s.pv.forEach(v=>{const n=pageName(v.Page);pages[n]=(pages[n]||0)+1;});
+  const topP=Object.entries(pages).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const guest=s.pv.filter(v=>!v.UserID).length,mem=s.pv.length-guest;
+  const per={};s.ok.forEach(l=>{const k=l.UserName||l.Email||"—";per[k]=(per[k]||0)+1;});
+  const topU=Object.entries(per).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const rows=s.t.logins.filter(l=>(!F.lres||l.Result===F.lres)&&(!q||(l.UserName+" "+l.Email+" "+l.Role).toLowerCase().includes(q))).slice(0,300);
+  const lab=k=>k.slice(8);
+  return tools(seg("range",[["7","7 days"],["14","14 days"],["30","30 days"]])+'<span class="sp"></span>'+
+    '<button class="btn b-out b-sm" onclick="download(\'visits.csv\',csv(TR().visits,[\'At\',\'Vid\',\'Page\',\'UserID\']),\'text/csv\')"><svg class="i"><use href="#down"/></svg> Visits CSV</button>'+
+    '<button class="btn b-red b-sm" onclick="clearTraffic()">Clear traffic data</button>')+
+  '<div class="grid g4" style="margin-bottom:16px">'+
+   kpi("Total visits",s.pv.length,"last "+days+" days · "+s.t.visits.length+" all time")+
+   kpi("Unique visitors",s.uniq,s.todayU+" today")+
+   kpi("Successful logins",s.ok.length,s.todayL+" today","good")+
+   kpi("Failed logins",s.bad.length,s.bad.length?"check for guessing attempts":"none","" +(s.bad.length>5?"bad":s.bad.length?"warn":"good"))+
+  '</div><div class="grid g2" style="margin-bottom:16px">'+
+   '<div class="panel"><div class="ph"><h4>Visits per day</h4></div><div class="pb">'+cols(0,s.keys.map(k=>[lab(k),s.vd[k]]))+'</div></div>'+
+   '<div class="panel"><div class="ph"><h4>Logins per day</h4></div><div class="pb">'+cols(0,s.keys.map(k=>[lab(k),s.lg[k]]))+'</div></div>'+
+  '</div><div class="grid g3" style="margin-bottom:16px">'+
+   '<div class="panel"><div class="ph"><h4>Most visited pages</h4></div><div class="pb">'+
+    (topP.length?topP.map(x=>hbar(x[0],x[1],topP[0][1])).join(""):'<div class="tiny">No visits recorded yet.</div>')+'</div></div>'+
+   '<div class="panel"><div class="ph"><h4>Visitors</h4><span class="sp"></span><span class="tag green dot">'+s.online.length+' online</span></div><div class="pb">'+
+    hbar("Guests",guest,Math.max(1,s.pv.length),guest)+hbar("Signed in",mem,Math.max(1,s.pv.length),mem,"green")+
+    (s.online.length?'<div class="divider"></div>'+s.online.map(o=>'<div class="rowsp"><span>'+esc(pageName(o.page))+'</span><span class="tiny">'+(o.uid?esc((one("USERS",o.uid)||{}).UserName||o.uid):"guest")+'</span></div>').join(""):"")+'</div></div>'+
+   '<div class="panel"><div class="ph"><h4>Most active accounts</h4><span class="sp"></span><span class="tiny">logins</span></div><div class="pb">'+
+    (topU.length?topU.map(x=>hbar(x[0],x[1],topU[0][1],x[1],"green")).join(""):'<div class="tiny">No logins yet.</div>')+'</div></div>'+
+  '</div>'+
+  tools(searchBox("Search name, email or role")+selectBox("lres",[["","All results"],["success","Successful"],["failed","Failed"]])+
+    '<span class="sp"></span><span class="tiny">'+rows.length+' sign-in entries</span>'+
+    '<button class="btn b-out b-sm" onclick="download(\'logins.csv\',csv(TR().logins,[\'At\',\'UserID\',\'UserName\',\'Email\',\'Role\',\'Result\',\'Source\']),\'text/csv\')"><svg class="i"><use href="#down"/></svg> Logins CSV</button>')+
+  '<div class="panel"><div class="scroll">'+(rows.length?
+   '<table class="dt"><thead><tr><th>When</th><th>User</th><th>Email</th><th>Role</th><th>Result</th><th>From</th></tr></thead><tbody>'+
+   rows.map(l=>'<tr'+(l.Result==="failed"?' class="flag"':'')+'><td class="mono">'+esc(fdt(l.At))+'</td><td>'+(l.UserName?'<b>@'+esc(l.UserName)+'</b>':'<span class="tiny">unknown</span>')+'</td>'+
+     '<td>'+esc(l.Email||"—")+'</td><td>'+esc(l.Role||"—")+'</td>'+
+     '<td><span class="tag dot '+(l.Result==="success"?"green":"red")+'">'+(l.Result==="success"?"Success":"Failed")+'</span></td><td class="tiny">'+esc(l.Source||"site")+'</td></tr>').join("")+'</tbody></table>'
+    :empty("shield","No sign-ins recorded yet","Logins appear here once tracker.js is on your login and home pages."))+'</div></div>';
+}
+function clearTraffic(){if(!confirm("Delete all visit and login history?"))return;trSave({visits:[],logins:[],live:{},lastSession:me()?me().UserID:""});audit("Cleared traffic data","","");toast("Traffic data cleared");render();}
+
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+function peso(n){return "₱"+Number(n||0).toLocaleString("en-PH",{maximumFractionDigits:0});}
+function today(){return new Date().toISOString().slice(0,10);}
+function fdate(d){if(!d)return "—";const x=new Date(String(d).length===10?d+"T00:00":d);return isNaN(x)?d:x.toLocaleDateString("en-PH",{day:"numeric",month:"short",year:"numeric"});}
+function fdt(d){if(!d)return "—";const x=new Date(d);return isNaN(x)?d:x.toLocaleString("en-PH",{day:"numeric",month:"short",year:"numeric",hour:"numeric",minute:"2-digit"});}
+function ini(u){
+  if(!u)return"?";
+  const f=(u.FirstName||"").trim(),l=(u.LastName||"").trim();
+  const s=(f[0]||"")+(l[0]||"");
+  return(s||"?").toUpperCase();
+}
+function fullName(u){
+  if(!u)return"Unknown user";
+  const n=((u.FirstName||"")+" "+(u.LastName||"")).trim();
+  return n||u.UserName||"Unknown user";
+}
+function stars(n){n=Math.round(Number(n)||0);return "★★★★★".slice(0,n)+"<span style='color:#DEE4EA'>"+"★★★★★".slice(0,5-n)+"</span>";}
+function nights(a,b){return Math.max(0,Math.round((new Date(b)-new Date(a))/864e5));}
+function toast(msg,kind,sub){
+  const el=document.createElement("div");el.className="toast "+(kind||"");
+  el.innerHTML='<svg class="i" style="margin-top:2px"><use href="#'+(kind==="bad"?"x":"check")+'"/></svg><div>'+esc(msg)+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>';
+  $("#toasts").appendChild(el);el.onclick=()=>el.remove();setTimeout(()=>el.remove(),kind==="bad"?15000:4000);
+}
+function modal(title,body,foot,wide){
+  $("#layer").innerHTML='<div class="ovl" onclick="if(event.target===this)closeModal()"><div class="modal"'+(wide?' style="max-width:760px"':'')+'>'+
+   '<div class="mh"><h4>'+esc(title)+'</h4><button class="btn b-out b-sm" onclick="closeModal()"><svg class="i"><use href="#x"/></svg></button></div>'+
+   '<div class="mb">'+body+'</div>'+(foot?'<div class="mf">'+foot+'</div>':'')+'</div></div>';
+}
+function closeModal(){$("#layer").innerHTML="";}
+function detailOf(lid){const l=one("LISTING",lid);if(!l)return null;const t=l.Category==="Hotel"?"HOTELS":l.Category==="Restaurant"?"RESTAURANTS":"ATTRACTIONS";return DB[t].find(r=>r.ListingID===lid)||null;}
+function nameOf(lid){const d=detailOf(lid);return d?(d.HotelName||d.RestaurantName||d.AttractionName):"(removed)";}
+function addrOf(lid){const d=detailOf(lid);return d?(d.Address||""):"";}
+function skinOf(lid){const l=one("LISTING",lid);if(!l)return "city";const n=parseInt(lid.replace(/\D/g,""),10)||1;
+  if(l.Category==="Hotel")return ["beach","pine","sun","city"][n%4];
+  if(l.Category==="Restaurant")return ["food","ramen","rose"][n%3];
+  return ["temple","falls","leaf"][n%3];}
+function iconOf(c){return c==="Hotel"?"bed":c==="Restaurant"?"fork":"ticket";}
+function priceOf(lid){const l=one("LISTING",lid),d=detailOf(lid);if(!d)return 0;
+  if(l.Category==="Hotel")return Number(d.NightlyRate)||0;
+  if(l.Category==="Attraction")return Number(d.EntranceFee)||0;
+  const m=String(d.PriceRange).match(/[\d,]+/);return m?Number(m[0].replace(/,/g,"")):0;}
+function reviewsFor(lid){
+  const l=one("LISTING",lid),d=detailOf(lid);if(!l||!d)return [];
+  let ids=[];
+  if(l.Category==="Hotel")ids=sel("HOTEL_REVIEWS",r=>r.HotelID===d.HotelID).map(r=>r.ReviewID);
+  if(l.Category==="Restaurant")ids=sel("RESTAURANT_REVIEWS",r=>r.RestaurantID===d.RestaurantID).map(r=>r.ReviewID);
+  if(l.Category==="Attraction")ids=sel("ATTRACTION_REVIEWS",r=>r.AttractionID===d.AttractionID).map(r=>r.ReviewID);
+  return ids.map(i=>one("REVIEWS",i)).filter(Boolean);}
+function ratingFor(lid){const rs=reviewsFor(lid).filter(r=>!r.Flagged);
+  return rs.length?{avg:Math.round(rs.reduce((s,r)=>s+Number(r.Rating),0)/rs.length*10)/10,n:rs.length}:{avg:null,n:0};}
+function listingOfReview(rid){
+  let b=one("HOTEL_REVIEWS",rid);if(b){const hh=DB.HOTELS.find(x=>x.HotelID===b.HotelID);return hh?hh.ListingID:null;}
+  b=one("RESTAURANT_REVIEWS",rid);if(b){const r=DB.RESTAURANTS.find(x=>x.RestaurantID===b.RestaurantID);return r?r.ListingID:null;}
+  b=one("ATTRACTION_REVIEWS",rid);if(b){const a=DB.ATTRACTIONS.find(x=>x.AttractionID===b.AttractionID);return a?a.ListingID:null;}
+  return null;}
+function bridgeOf(rid){
+  if(one("HOTEL_REVIEWS",rid))return "HOTEL_REVIEWS";
+  if(one("RESTAURANT_REVIEWS",rid))return "RESTAURANT_REVIEWS";
+  if(one("ATTRACTION_REVIEWS",rid))return "ATTRACTION_REVIEWS";
+  return null;}
+function deps(uid){return{
+  BOOKINGS:sel("BOOKINGS",b=>b.UserID===uid).length,
+  REVIEWS:sel("REVIEWS",r=>r.UserID===uid).length,
+  TRIP_PLANS:sel("TRIP_PLANS",t=>t.UserID===uid).length,
+  LISTING:sel("LISTING",l=>l.HostUserID===uid).length,
+  FORUM_POSTS:sel("FORUM_POSTS",p=>p.UserID===uid).length,
+  FORUM_REPLIES:sel("FORUM_REPLIES",r=>r.UserID===uid).length,
+  PHOTOS:sel("PHOTOS",p=>p.UserID===uid).length};}
+
+let VIEW="dashboard", F={q:"",role:"",cat:"",lstat:"",bstat:"",rvf:"all",fmt:"posts",tbl:"BOOKINGS",range:"14",lres:""};
+const NAV=[
+  ["grp","Monitor"],
+  ["dashboard","Dashboard","grid"],
+  ["reports","Reports","chart"],
+  ["traffic","Visits & logins","user"],
+  ["grp","Manage"],
+  ["users","Users","user"],
+  ["listings","Listings","bed"],
+  ["bookings","Bookings","cal"],
+  ["trips","Trip plans","map"],
+  ["grp","Moderate"],
+  ["reviews","Reviews","star"],
+  ["forum","Forum","chat"],
+  ["photos","Photos","photo"],
+  ["grp","System"],
+  ["tables","Tables","db"],
+  ["activity","Activity log","shield"]
+];
+const META={
+  dashboard:["Dashboard","Everything happening on the platform right now"],
+  traffic:["Visits & logins","Website traffic, who is online, and every sign-in attempt"],
+  reports:["Reports","Booking value, ratings and catalog breakdowns"],
+  users:["Users","Traveler, host and administrator accounts"],
+  listings:["Listings","Hotels, restaurants and attractions in the catalog"],
+  bookings:["Bookings","Reservations and their status"],
+  trips:["Trip plans","Itineraries travelers have saved"],
+  reviews:["Reviews","Ratings and written reviews left by travelers"],
+  forum:["Forum","Discussions and replies from the community"],
+  photos:["Photos","Images attached to reviews, forum posts and listings"],
+  tables:["Tables","Browse and export the raw data"],
+  activity:["Activity log","A record of every action taken in this console"]
+};
+function counts(){
+  return{
+    users:DB.USERS.length,
+    listings:sel("LISTING",l=>l.ListingStatus==="Pending Review").length||DB.LISTING.length,
+    listingsAlert:sel("LISTING",l=>l.ListingStatus==="Pending Review").length>0,
+    bookings:DB.BOOKINGS.length,
+    trips:DB.TRIP_PLANS.length,
+    reviews:sel("REVIEWS",r=>r.Flagged).length||DB.REVIEWS.length,
+    reviewsAlert:sel("REVIEWS",r=>r.Flagged).length>0,
+    forum:sel("FORUM_POSTS",p=>p.Flagged).length||DB.FORUM_POSTS.length,
+    forumAlert:sel("FORUM_POSTS",p=>p.Flagged).length>0,
+    photos:DB.PHOTOS.length,
+    tables:TABLES.length,
+    activity:DB._audit.length,
+    dashboard:null,reports:null
+  };
+}
+let OPEN="";
+const SUB={
+  users:[["role","",[["","All users"],["Traveler","Travelers"],["Host","Hosts"],["Administrator","Administrators"]]]],
+  listings:[["lstat","Status",[["","All statuses"],["Published","Published"],["Pending Review","Pending review"],["Delisted","Delisted"]]],
+            ["cat","Category",[["","All categories"],["Hotel","Hotels"],["Restaurant","Restaurants"],["Attraction","Attractions"]]]],
+  bookings:[["bstat","",[["","All bookings"],["Requested","Requested"],["Confirmed","Confirmed"],["Completed","Completed"],["Cancelled","Cancelled"]]]],
+  reviews:[["rvf","",[["all","All reviews"],["flag","Reported"],["low","Low rated (3★ or less)"]]]],
+  forum:[["fmt","",[["posts","Discussions"],["replies","Replies"]]]]
+};
+function subCount(v,f,val){
+  if(f==="role")return val?sel("USERS",u=>u.Role===val).length:DB.USERS.length;
+  if(f==="cat")return val?sel("LISTING",l=>l.Category===val).length:DB.LISTING.length;
+  if(f==="lstat")return val?sel("LISTING",l=>l.ListingStatus===val).length:DB.LISTING.length;
+  if(f==="bstat")return val?sel("BOOKINGS",b=>b.BookingStatus===val).length:DB.BOOKINGS.length;
+  if(f==="rvf")return val==="flag"?sel("REVIEWS",r=>r.Flagged).length:val==="low"?sel("REVIEWS",r=>Number(r.Rating)<=3).length:DB.REVIEWS.length;
+  if(f==="fmt")return val==="replies"?DB.FORUM_REPLIES.length:DB.FORUM_POSTS.length;
+  return "";}
+function subMenu(v){
+  return '<div class="subm">'+SUB[v].map(g=>(g[1]?'<div class="sl">'+g[1]+'</div>':'')+
+    g[2].map(o=>'<button class="sbtn '+(VIEW===v&&F[g[0]]===o[0]?"on":"")+'" onclick="setSub(\''+v+'\',\''+g[0]+'\',\''+o[0]+'\')">'+o[1]+
+     '<span class="sc">'+subCount(v,g[0],o[0])+'</span></button>').join("")).join("")+'</div>';}
+function setSub(v,f,val){F[f]=val;F.q="";VIEW=v;OPEN=v;render();window.scrollTo(0,0);}
+
+function render(){
+  const ae=document.activeElement,keep=ae&&ae.closest&&ae.closest(".search")?{p:ae.selectionStart}:null;
+  closeModal();
+  if(!isAdmin()){$("#app").innerHTML=gate();return;}
+  const c=counts(),m=META[VIEW]||META.dashboard;
+  const body=({dashboard:vDashboard,traffic:vTraffic,reports:vReports,users:vUsers,listings:vListings,bookings:vBookings,
+    trips:vTrips,reviews:vReviews,forum:vForum,photos:vPhotos,tables:vTables,activity:vActivity}[VIEW]||vDashboard)();
+  $("#app").innerHTML=
+   '<div class="shell"><aside class="rail" id="rail">'+
+    '<div class="brand"><span class="mk">◈</span><div><b>TravelMate</b><small>Admin</small></div></div>'+
+    NAV.map(n=>n[0]==="grp"?'<div class="grp">'+n[1]+'</div>'
+      :'<button class="nav '+(VIEW===n[0]?"on":"")+'" onclick="nav(\''+n[0]+'\')"><svg class="i"><use href="#'+n[2]+'"/></svg> '+n[1]+
+       (c[n[0]]!==null&&c[n[0]]!==undefined?'<span class="cnt '+(c[n[0]+"Alert"]?"alert":"")+'">'+c[n[0]]+'</span>':'')+
+       (SUB[n[0]]?'<svg class="i chev '+(OPEN===n[0]?"up":"")+'"><use href="#chev"/></svg>':'')+'</button>'+
+       (SUB[n[0]]&&OPEN===n[0]?subMenu(n[0]):'')).join("")+
+    '<div class="end">Signed in as <b style="color:#fff">@'+esc(me().UserName)+'</b><br>'+esc(me().Email)+'</div>'+
+   '</aside><div class="main">'+
+    '<div class="top"><button class="btn b-out b-sm" style="display:none" id="burger" onclick="$(\'#rail\').classList.toggle(\'open\')"><svg class="i"><use href="#menu"/></svg></button>'+
+     '<div><h1>'+m[0]+'</h1><p>'+m[1]+'</p></div><span class="sp"></span>'+
+     '<span class="tag green dot" title="Updates automatically when travelers register or book">Live</span>'+
+     '<span class="chip"><span class="av">'+ini(me())+'</span>'+esc(fullName(me()))+'</span>'+
+     '<button class="btn b-out b-sm" onclick="signOut()"><svg class="i"><use href="#out"/></svg> Sign out</button>'+
+    '</div><div class="body">'+body+'</div></div></div>';
+  if(window.innerWidth<820)$("#burger").style.display="inline-flex";
+  if(keep){const ni=$(".search input");if(ni){ni.focus();try{ni.setSelectionRange(keep.p,keep.p);}catch(e){}}}
+}
+function nav(v){OPEN=SUB[v]?((VIEW===v&&OPEN===v)?"":v):"";VIEW=v;F.q="";render();window.scrollTo(0,0);}
+function signOut(){SBR.signOut().then(()=>{load();toast("Signed out");render();});}
+
+function gate(){
+  const wrong=me()&&!isAdmin();
+  return '<div class="gate"><div class="gbox">'+
+   '<div class="bd"><span class="mk">◈</span><div><h3>TravelMate</h3><small>Admin console</small></div></div>'+
+   (wrong?'<p style="font-size:12.5px;color:var(--ink-2);margin:0 0 14px">You are signed in as <b>@'+esc(me().UserName)+'</b>, a '+esc(me().Role)+'. This console is for administrators.</p>'+
+     '<button class="btn b-out b-full" onclick="signOut()">Sign in as someone else</button>'
+    :'<div class="frm"><div><label class="lb">Email</label><input class="inp" id="gm" placeholder="admin email"></div>'+
+     '<div><label class="lb">Password</label><input class="inp" type="password" id="gp" onkeydown="if(event.key===\'Enter\')signIn()"></div>'+
+     '<div id="gerr"></div><button class="btn b-pri b-full" onclick="signIn()">Sign in</button></div>')+
+  '</div></div>';
+}
+function signIn(){
+  const em=$("#gm").value.trim().toLowerCase(),pw=$("#gp").value,err=$("#gerr");
+  err.innerHTML="";
+  if(!em||!pw){err.innerHTML='<div class="err">Enter your email and password.</div>';return;}
+  SBR.signIn(em,pw).then(r=>{
+    if(!r.ok){trLogin(em,null,false);err.innerHTML='<div class="err">'+esc(r.error)+'</div>';return;}
+    trLogin(em,r.user,true);load();
+    try{audit("Signed in","","");}catch(e){console.error(e);}
+    toast("Welcome back, "+r.user.FirstName,"good");render();
+  }).catch(e=>{console.error(e);err.innerHTML='<div class="err">Sign-in failed: '+esc(e.message||e)+'</div>';});
+}
+
+function kpi(label,val,sub,tone){return '<div class="kpi '+(tone||"")+'"><div class="lb">'+esc(label)+'</div><b>'+val+'</b><div class="sub">'+sub+'</div></div>';}
+function tools(inner){return '<div class="bar-tools">'+inner+'</div>';}
+function searchBox(ph){return '<div class="search"><svg class="i"><use href="#search"/></svg><input class="inp" placeholder="'+esc(ph)+'" value="'+esc(F.q)+'" oninput="F.q=this.value;render()"></div>';}
+function seg(field,opts){return '<div class="seg">'+opts.map(o=>'<button class="'+(F[field]===o[0]?"on":"")+'" onclick="F.'+field+'=\''+o[0]+'\';render()">'+o[1]+'</button>').join("")+'</div>';}
+function selectBox(field,opts){return '<select class="inp" style="width:auto" onchange="F.'+field+'=this.value;render()">'+
+  opts.map(o=>'<option value="'+o[0]+'" '+(F[field]===o[0]?"selected":"")+'>'+o[1]+'</option>').join("")+'</select>';}
+function empty(icon,t,s){return '<div class="empty"><svg class="i"><use href="#'+icon+'"/></svg><b>'+esc(t)+'</b>'+esc(s||"")+'</div>';}
+function statusTag(s){
+  const map={Published:"green",Confirmed:"blue",Requested:"amber",Completed:"green","Pending Review":"amber",Delisted:"",Cancelled:"red",Draft:""};
+  return '<span class="tag dot '+(map[s]||"")+'">'+esc(s)+'</span>';
+}
+function thumb(lid){
+  const d=detailOf(lid),url=d?(d.ImageURL||""):"",isImg=/^(data:image\/|https?:\/\/)/.test(url);
+  if(isImg)return '<div class="thumb" style="background:url(&quot;'+esc(url)+'&quot;) center/cover;background-color:#eee"></div>';
+  return '<div class="thumb '+skinOf(lid)+'"><svg class="i"><use href="#'+iconOf((one("LISTING",lid)||{}).Category)+'"/></svg></div>';
+}
+function csv(rows,cols){
+  const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  return cols.join(",")+"\n"+rows.map(r=>cols.map(c=>q(r[c])).join(",")).join("\n");
+}
+function download(name,text,mime){
+  const b=new Blob([text],{type:mime||"text/plain;charset=utf-8"}),u=URL.createObjectURL(b);
+  const a=document.createElement("a");a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);
+  toast("Downloaded "+name,"good");
+}
+function cols(labels,data,fmt){
+  const max=Math.max(1,...data.map(d=>d[1]));
+  return '<div class="cols">'+data.map(d=>'<div class="col"><span class="v">'+(fmt?fmt(d[1]):d[1])+'</span>'+
+    '<span class="b" style="height:'+Math.max(3,Math.round(d[1]/max*118))+'px"></span><span class="k">'+esc(d[0])+'</span></div>').join("")+'</div>';
+}
+function hbar(name,val,max,label,tone){
+  return '<div class="hb"><span class="n" title="'+esc(name)+'">'+esc(name)+'</span>'+
+    '<span class="t"><i class="'+(tone||"")+'" style="width:'+Math.round(Math.min(1,val/Math.max(1,max))*100)+'%"></i></span>'+
+    '<span class="v">'+(label!==undefined?label:val)+'</span></div>';
+}
+
+function vDashboard(){
+  const pend=sel("LISTING",l=>l.ListingStatus==="Pending Review");
+  const flagR=sel("REVIEWS",r=>r.Flagged),flagP=sel("FORUM_POSTS",p=>p.Flagged);
+  const active=sel("BOOKINGS",b=>b.BookingStatus!=="Cancelled");
+  const rev=active.reduce((s,b)=>s+Number(b.TotalPrice),0);
+  const unsettled=sel("BOOKINGS",b=>b.BookingStatus==="Confirmed"&&b.CheckOutDate<today());
+  const byMonth={};active.forEach(b=>{const k=String(b.CheckInDate).slice(0,7);byMonth[k]=(byMonth[k]||0)+Number(b.TotalPrice);});
+  const months=Object.keys(byMonth).sort().slice(-6);
+  const mix=["Confirmed","Requested","Completed","Cancelled"].map(s=>[s,sel("BOOKINGS",b=>b.BookingStatus===s).length]);
+  const tot=Math.max(1,DB.BOOKINGS.length);
+  const colors=["#0194F3","#F0A500","#00A651","#8D97A2"];
+  let acc=0;const stops=mix.map((x,i)=>{const a=acc;acc+=x[1]/tot*360;return colors[i]+" "+a+"deg "+acc+"deg";}).join(",");
+  const recent=DB._audit.slice(0,5);
+  const latest=[...DB.BOOKINGS].slice(-4).reverse();
+  return '<div class="grid g4" style="margin-bottom:16px">'+
+   kpi("Registered users",DB.USERS.length,sel("USERS",u=>u.Role==="Host").length+" hosts · "+sel("USERS",u=>u.Role==="Traveler").length+" travelers")+
+   kpi("Published listings",sel("LISTING",l=>l.ListingStatus==="Published").length,pend.length?pend.length+" awaiting review":"nothing pending",pend.length?"warn":"good")+
+   kpi("Booking value",peso(rev),active.length+" active bookings")+
+   kpi("Reported content",flagR.length+flagP.length,(flagR.length+flagP.length)?"waiting on a decision":"queue is clear",(flagR.length+flagP.length)?"bad":"good")+
+  '</div>'+
+  trafficKpis()+
+  ((pend.length||flagR.length||flagP.length||unsettled.length)?
+   '<div class="panel" style="margin-bottom:16px"><div class="ph"><h4>Needs attention</h4></div><div class="pb grid" style="gap:9px">'+
+    (pend.length?attn("amber",pend.length+" listing"+(pend.length>1?"s":"")+" awaiting review","Hidden from search until published","listings"):"")+
+    (flagR.length?attn("red",flagR.length+" reported review"+(flagR.length>1?"s":""),"Hidden from travelers until reviewed","reviews"):"")+
+    (flagP.length?attn("red",flagP.length+" reported forum post"+(flagP.length>1?"s":""),"Hidden from the forum until reviewed","forum"):"")+
+    (unsettled.length?attn("amber",unsettled.length+" stay"+(unsettled.length>1?"s":"")+" past check-out","Still marked Confirmed","bookings"):"")+
+   '</div></div>':
+   '<div class="panel" style="margin-bottom:16px"><div class="pb" style="text-align:center;padding:20px"><b style="font-size:13.5px">Nothing needs attention</b><div class="tiny" style="margin-top:3px">No pending listings, no reports, no unsettled stays.</div></div></div>')+
+  '<div class="grid" style="grid-template-columns:1.5fr 1fr;margin-bottom:16px">'+
+   '<div class="panel"><div class="ph"><h4>Booking value by month</h4><span class="sp"></span><span class="tiny">check-in date</span></div>'+
+    '<div class="pb">'+(months.length?cols(0,months.map(k=>[k.slice(5)+"/"+k.slice(2,4),byMonth[k]]),peso):'<div class="tiny">No bookings yet.</div>')+'</div></div>'+
+   '<div class="panel"><div class="ph"><h4>Bookings by status</h4></div><div class="pb row" style="gap:18px">'+
+    '<div class="donut" style="background:conic-gradient('+stops+')"><div class="mid"><b>'+DB.BOOKINGS.length+'</b><small>bookings</small></div></div>'+
+    '<div class="legend" style="flex:1">'+mix.map((x,i)=>'<div><i style="background:'+colors[i]+'"></i>'+x[0]+'<span style="flex:1"></span><b>'+x[1]+'</b></div>').join("")+
+     '<div class="divider"></div><div><span class="tiny">Average value</span><span style="flex:1"></span><b>'+peso(active.length?rev/active.length:0)+'</b></div></div>'+
+   '</div></div></div>'+
+  '<div class="grid g2">'+
+   '<div class="panel"><div class="ph"><h4>Latest bookings</h4><span class="sp"></span><button class="btn b-out b-sm" onclick="nav(\'bookings\')">View all</button></div>'+
+    (latest.length?'<div class="scroll"><table class="dt"><tbody>'+latest.map(b=>'<tr>'+
+      '<td style="width:52px">'+thumb(b.ListingID)+'</td>'+
+      '<td><b>'+esc(nameOf(b.ListingID))+'</b><div class="tiny">'+esc((one("USERS",b.UserID)||{}).UserName||"—")+' · '+fdate(b.CheckInDate)+'</div></td>'+
+      '<td class="money" style="text-align:right">'+peso(b.TotalPrice)+'</td>'+
+      '<td style="text-align:right">'+statusTag(b.BookingStatus)+'</td></tr>').join("")+'</tbody></table></div>':empty("cal","No bookings yet"))+
+   '</div>'+
+   '<div class="panel"><div class="ph"><h4>Recent activity</h4><span class="sp"></span><button class="btn b-out b-sm" onclick="nav(\'activity\')">Full log</button></div>'+
+    (recent.length?'<div class="scroll"><table class="dt"><tbody>'+recent.map(a=>'<tr>'+
+      '<td><b>'+esc(a.Action)+'</b><div class="tiny">'+esc(a.Detail||a.Target)+'</div></td>'+
+      '<td class="tiny" style="text-align:right;white-space:nowrap">'+esc(a.At.slice(5,16))+'</td></tr>').join("")+'</tbody></table></div>'
+     :'<div class="pb tiny">Nothing recorded yet in this session.</div>')+
+   '</div></div>';
+}
+function attn(tone,title,sub,view){
+  return '<div class="row" style="border:1px solid var(--line);border-left:3px solid var(--'+(tone==="red"?"red":"amber")+');border-radius:8px;padding:11px 13px">'+
+    '<div style="flex:1"><b style="font-size:12.5px">'+esc(title)+'</b><div class="tiny">'+esc(sub)+'</div></div>'+
+    '<button class="btn b-blue b-sm" onclick="nav(\''+view+'\')">Open</button></div>';
+}
+
+function vUsers(){
+  const q=F.q.toLowerCase();
+  let rows=DB.USERS.filter(u=>!F.role||u.Role===F.role)
+    .filter(u=>!q||(fullName(u)+" "+(u.UserName||"")+" "+(u.Email||"")+" "+u.UserID).toLowerCase().includes(q));
+  return tools(searchBox("Search name, handle or email")+
+    selectBox("role",[["","All roles"],["Traveler","Travelers"],["Host","Hosts"],["Administrator","Administrators"]])+
+    '<span class="sp"></span><span class="tiny">'+rows.length+' of '+DB.USERS.length+'</span>'+
+    '<button class="btn b-out b-sm" onclick="expUsers()"><svg class="i"><use href="#down"/></svg> Export CSV</button>'+
+    '<button class="btn b-org b-sm" onclick="newUser()"><svg class="i"><use href="#plus"/></svg> Add user</button>')+
+  '<div class="panel"><div class="scroll">'+(rows.length?
+   '<table class="dt"><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Last login</th><th>Logins</th><th>Bookings</th><th>Reviews</th><th>Listings</th><th></th></tr></thead><tbody>'+
+   rows.map(u=>{const d=deps(u.UserID);return '<tr>'+
+    '<td><div class="row"><span class="av">'+ini(u)+'</span><div><b>'+esc(fullName(u))+'</b>'+
+      '<div class="tiny">@'+esc(u.UserName)+' · <span class="mono">'+u.UserID+'</span></div></div></div></td>'+
+    '<td>'+esc(u.Email)+'</td>'+
+    '<td><select class="inp sm" style="width:auto" onchange="setRole(\''+u.UserID+'\',this.value)">'+
+      ["Traveler","Host","Administrator"].map(r=>'<option '+(u.Role===r?"selected":"")+'>'+r+'</option>').join("")+'</select></td>'+
+    '<td>'+fdate(u.DateRegistered)+'</td><td>'+lastLogin(u.UserID)+'</td><td>'+loginCount(u.UserID)+'</td><td>'+d.BOOKINGS+'</td><td>'+d.REVIEWS+'</td><td>'+d.LISTING+'</td>'+
+    '<td><div class="acts"><button class="btn b-blue b-sm" onclick="viewUser(\''+u.UserID+'\')">View</button>'+
+      '<button class="btn b-out b-sm" onclick="editUser(\''+u.UserID+'\')"><svg class="i"><use href="#edit"/></svg></button>'+
+      '<button class="btn b-red b-sm" onclick="askDeleteUser(\''+u.UserID+'\')"><svg class="i"><use href="#trash"/></svg></button></div></td></tr>';}).join("")+
+   '</tbody></table>':empty("user","No user matches","Try a different search or role filter."))+'</div></div>';
+}
+function setRole(id,role){const u=one("USERS",id);update("USERS",id,{Role:role});audit("Changed role","@"+u.UserName,u.Role+" → "+role);toast("Role updated to "+role,"good");render();}
+function viewUser(id){
+  const u=one("USERS",id),d=deps(id);
+  const bk=sel("BOOKINGS",b=>b.UserID===id);
+  modal("@"+u.UserName,
+   '<div class="row" style="gap:12px;margin-bottom:14px"><span class="av" style="width:44px;height:44px;font-size:15px">'+ini(u)+'</span>'+
+   '<div><b style="font-size:15px">'+esc(fullName(u))+'</b><div class="tiny">'+esc(u.Email||"—")+'</div></div>'+
+   '<span class="sp" style="flex:1"></span><span class="tag blue">'+esc(u.Role||"Traveler")+'</span></div>'+
+   '<div class="rowsp"><span>User ID</span><b class="mono">'+u.UserID+'</b></div>'+
+   '<div class="rowsp"><span>Registered</span><b>'+fdate(u.DateRegistered)+'</b></div>'+
+   '<div class="rowsp"><span>Last login</span><b>'+lastLogin(id)+'</b></div>'+
+   '<div class="rowsp"><span>Total logins</span><b>'+loginCount(id)+'</b></div>'+
+   '<div class="rowsp"><span>Password</span><b class="mono">'+esc(u.Password)+'</b></div>'+
+   '<div class="divider"></div>'+
+   Object.keys(d).map(k=>'<div class="rowsp"><span class="mono">'+k+'</span><b>'+d[k]+'</b></div>').join("")+
+   (bk.length?'<div class="divider"></div><b style="font-size:12.5px">Bookings</b>'+
+     bk.map(b=>'<div class="rowsp"><span>'+esc(nameOf(b.ListingID))+' · '+fdate(b.CheckInDate)+'</span>'+statusTag(b.BookingStatus)+'</div>').join(""):""),
+   '<button class="btn b-out" onclick="closeModal()">Close</button><button class="btn b-pri" onclick="closeModal();editUser(\''+id+'\')">Edit user</button>');
+}
+function editUser(id){
+  const u=one("USERS",id);
+  modal("Edit @"+u.UserName,
+   '<div class="frm"><div class="two"><div><label class="lb">First name</label><input class="inp" id="ufn" value="'+esc(u.FirstName)+'"></div>'+
+   '<div><label class="lb">Last name</label><input class="inp" id="uln" value="'+esc(u.LastName)+'"></div></div>'+
+   '<div class="two"><div><label class="lb">Display name</label><input class="inp" id="uun" value="'+esc(u.UserName)+'"></div>'+
+   '<div><label class="lb">Role</label><select class="inp" id="uro">'+["Traveler","Host","Administrator"].map(r=>'<option '+(u.Role===r?"selected":"")+'>'+r+'</option>').join("")+'</select></div></div>'+
+   '<div><label class="lb">Email</label><input class="inp" id="uem" value="'+esc(u.Email)+'"></div>'+
+   '<div><label class="lb">New password</label><input class="inp" id="upw" type="password" placeholder="Leave blank to keep the current one"></div>'+
+   '<div id="uerr"></div></div>',
+   '<button class="btn b-out" onclick="closeModal()">Cancel</button><button class="btn b-pri" onclick="saveUser(\''+id+'\')">Save changes</button>');
+}
+function saveUser(id){
+  const fn=$("#ufn").value.trim(),ln=$("#uln").value.trim(),un=$("#uun").value.trim(),em=$("#uem").value.trim(),pw=$("#upw").value;
+  if(!fn||!ln||!un||!em){$("#uerr").innerHTML='<div class="err">Name, display name and email are all required.</div>';return;}
+  if(DB.USERS.some(u=>u.UserID!==id&&u.Email.toLowerCase()===em.toLowerCase())){$("#uerr").innerHTML='<div class="err">Another account already uses that email.</div>';return;}
+  if(DB.USERS.some(u=>u.UserID!==id&&u.UserName.toLowerCase()===un.toLowerCase())){$("#uerr").innerHTML='<div class="err">That display name is taken.</div>';return;}
+  const patch={FirstName:fn,LastName:ln,UserName:un,Email:em,Role:$("#uro").value};
+  if(pw){$("#uerr").innerHTML='<div class="err">Passwords are managed by Supabase: Authentication → Users → ⋯ → Send password recovery.</div>';return;}
+  update("USERS",id,patch);audit("Edited user","@"+un,pw?"details and password":"details");
+  closeModal();toast("User updated","good");render();
+}
+function newUser(){
+  modal("Add user",
+   '<div class="frm"><div class="two"><div><label class="lb">First name</label><input class="inp" id="nfn"></div>'+
+   '<div><label class="lb">Last name</label><input class="inp" id="nln"></div></div>'+
+   '<div class="two"><div><label class="lb">Display name</label><input class="inp" id="nun"></div>'+
+   '<div><label class="lb">Role</label><select class="inp" id="nro"><option>Traveler</option><option>Host</option><option>Administrator</option></select></div></div>'+
+   '<div><label class="lb">Email</label><input class="inp" id="nem"></div>'+
+   '<div><label class="lb">Password</label><input class="inp" id="npw" type="password" placeholder="Optional. The person sets their own when they register"></div>'+
+   '<div id="nerr"></div></div>',
+   '<button class="btn b-out" onclick="closeModal()">Cancel</button><button class="btn b-org" onclick="createUser()">Create account</button>');
+}
+function createUser(){
+  const fn=$("#nfn").value.trim(),ln=$("#nln").value.trim(),un=$("#nun").value.trim(),em=$("#nem").value.trim(),pw=$("#npw").value;
+  if(!fn||!ln||!un||!em){$("#nerr").innerHTML='<div class="err">Fill in every field.</div>';return;}
+  if(DB.USERS.some(u=>u.Email.toLowerCase()===em.toLowerCase())){$("#nerr").innerHTML='<div class="err">That email is already registered.</div>';return;}
+  if(DB.USERS.some(u=>u.UserName.toLowerCase()===un.toLowerCase())){$("#nerr").innerHTML='<div class="err">That display name is taken.</div>';return;}
+  const id=nextId("USERS","U",3);
+  insert("USERS",{UserID:id,UserName:un,FirstName:fn,LastName:ln,Email:em,Password:h(pw),ProfilePhotoUrl:"",DateRegistered:today(),Role:$("#nro").value});
+  audit("Created user","@"+un,$("#nro").value);closeModal();toast("Profile "+id+" created. They log in after registering with this email","good");render();
+}
+function askDeleteUser(id){
+  const u=one("USERS",id),d=deps(id),n=Object.values(d).reduce((a,b)=>a+b,0);
+  if(id===DB._session){toast("You cannot delete the account you are signed in with","bad");return;}
+  modal("Delete @"+u.UserName+"?",
+   '<p style="margin:0 0 14px;font-size:12.5px;color:var(--ink-2)">These rows belong to the account and will go with it.</p>'+
+   Object.keys(d).map(k=>'<div class="rowsp"><span class="mono">'+k+'</span><b>'+d[k]+' row'+(d[k]===1?"":"s")+'</b></div>').join(""),
+   '<button class="btn b-out" onclick="closeModal()">Cancel</button>'+
+   '<button class="btn b-red" onclick="doDeleteUser(\''+id+'\')">Delete account and '+n+' rows</button>');
+}
+function doDeleteUser(id){
+  const u=one("USERS",id);
+  sel("LISTING",l=>l.HostUserID===id).forEach(l=>purgeListing(l.ListingID));
+  sel("REVIEWS",r=>r.UserID===id).forEach(r=>purgeReview(r.ReviewID));
+  sel("FORUM_POSTS",p=>p.UserID===id).forEach(p=>purgePost(p.PostID));
+  sel("FORUM_REPLIES",r=>r.UserID===id).forEach(r=>remove("FORUM_REPLIES",r.ReplyID));
+  sel("TRIP_PLANS",t=>t.UserID===id).forEach(t=>{sel("TRIP_PLAN_ITEMS",i=>i.TripID===t.TripID).forEach(i=>remove("TRIP_PLAN_ITEMS",i.ItemID));remove("TRIP_PLANS",t.TripID);});
+  sel("BOOKINGS",b=>b.UserID===id).forEach(b=>remove("BOOKINGS",b.BookingID));
+  sel("PHOTOS",p=>p.UserID===id).forEach(p=>remove("PHOTOS",p.PhotoID));
+  remove("USERS",id);audit("Deleted user","@"+u.UserName,"with dependent rows");
+  closeModal();toast("Account removed","good");render();
+}
+function expUsers(){download("USERS.csv",csv(DB.USERS,SCHEMA.USERS.cols),"text/csv");}
+
+function vListings(){
+  const q=F.q.toLowerCase();
+  let rows=DB.LISTING.filter(l=>!F.cat||l.Category===F.cat).filter(l=>!F.lstat||l.ListingStatus===F.lstat)
+    .filter(l=>!q||(nameOf(l.ListingID)+" "+addrOf(l.ListingID)+" "+l.ListingID).toLowerCase().includes(q));
+  const pend=sel("LISTING",l=>l.ListingStatus==="Pending Review").length;
+  return tools(searchBox("Search name, address or ID")+
+    selectBox("cat",[["","All categories"],["Hotel","Hotels"],["Restaurant","Restaurants"],["Attraction","Attractions"]])+
+    selectBox("lstat",[["","All statuses"],["Published","Published"],["Pending Review","Pending review"],["Delisted","Delisted"]])+
+    '<span class="sp"></span><span class="tiny">'+rows.length+' of '+DB.LISTING.length+'</span>'+
+    (pend?'<button class="btn b-org b-sm" onclick="publishAllPending()">Publish all '+pend+' pending</button>':'')+
+    '<button class="btn b-out b-sm" onclick="expListings()"><svg class="i"><use href="#down"/></svg> Export CSV</button>'+
+    '<button class="btn b-pri b-sm" onclick="newListing()"><svg class="i"><use href="#plus"/></svg> New listing</button>')+
+  '<div class="panel"><div class="scroll">'+(rows.length?
+   '<table class="dt"><thead><tr><th>Listing</th><th>Category</th><th>Host</th><th>Price</th><th>Rating</th><th>Bookings</th><th>Status</th><th></th></tr></thead><tbody>'+
+   rows.map(l=>{const d=detailOf(l.ListingID),r=ratingFor(l.ListingID);
+    const bk=sel("BOOKINGS",b=>b.ListingID===l.ListingID&&b.BookingStatus!=="Cancelled").length;
+    return '<tr><td><div class="row">'+thumb(l.ListingID)+
+      '<div><b>'+esc(nameOf(l.ListingID))+'</b><div class="tiny">'+esc(addrOf(l.ListingID))+'</div></div></div></td>'+
+     '<td><span class="tag blue">'+l.Category+'</span></td>'+
+     '<td>@'+esc((one("USERS",l.HostUserID)||{}).UserName||"—")+'</td>'+
+     '<td>'+(priceOf(l.ListingID)?peso(priceOf(l.ListingID)):"Free")+'</td>'+
+     '<td>'+(r.avg?'<span class="stars">'+stars(r.avg)+'</span> <span class="tiny">'+r.avg.toFixed(1)+' ('+r.n+')</span>':'<span class="tiny">—</span>')+'</td>'+
+     '<td>'+bk+'</td><td>'+statusTag(l.ListingStatus)+'</td>'+
+     '<td><div class="acts">'+
+      (l.ListingStatus!=="Delisted"&&l.ListingStatus!=="Pending Review"?'<button class="btn b-out b-sm" onclick="setListing(\''+l.ListingID+'\',\'Delisted\')">Delist</button>'
+        :'<button class="btn b-org b-sm" onclick="setListing(\''+l.ListingID+'\',\'Published\')">Publish</button>')+
+      '<button class="btn b-blue b-sm" onclick="editListing(\''+l.ListingID+'\')"><svg class="i"><use href="#edit"/></svg></button>'+
+      '<button class="btn b-red b-sm" onclick="askDeleteListing(\''+l.ListingID+'\')"><svg class="i"><use href="#trash"/></svg></button>'+
+     '</div></td></tr>';}).join("")+'</tbody></table>'
+   :empty("bed","No listing matches","Adjust the filters above."))+'</div></div>';
+}
+function afterSync(okMsg,failMsg){
+  return (window.SBR?SBR.flush():Promise.resolve([])).then(errs=>{
+    const e=(errs||[]).find(x=>/^LISTING /.test(x))||(errs||[])[0];
+    if(e)toast(failMsg,"bad",String(e).replace(/^LISTING \S+: /,""));else toast(okMsg,"good");
+  });
+}
+function setListing(id,st){const nm=nameOf(id);update("LISTING",id,{ListingStatus:st});audit(st==="Published"?"Published listing":"Delisted listing",nm,id);render();
+  afterSync(nm+" is now "+st,"Could not "+(st==="Published"?"publish ":"delist ")+nm+" — Supabase rejected the change");}
+function publishAllPending(){
+  const p=sel("LISTING",l=>l.ListingStatus==="Pending Review");
+  p.forEach(l=>update("LISTING",l.ListingID,{ListingStatus:"Published"}));
+  audit("Published listings",p.length+" listings","bulk action");render();afterSync(p.length+" listings published","Could not publish listings — Supabase rejected the change");
+}
+function editListing(id){
+  const l=one("LISTING",id),d=detailOf(id);
+  let extra="";
+  if(l.Category==="Hotel")extra='<div class="three"><div><label class="lb">Stars</label><select class="inp" id="ls">'+[5,4,3,2,1].map(s=>'<option '+(Number(d.StarRating)===s?"selected":"")+'>'+s+'</option>').join("")+'</select></div>'+
+    '<div><label class="lb">Nightly rate</label><input class="inp" id="lr" type="number" value="'+(d.NightlyRate||0)+'"></div>'+
+    '<div><label class="lb">Contact</label><input class="inp" id="lc" value="'+esc(d.ContactInfo||"")+'"></div></div>'+
+    '<div><label class="lb">Amenities</label><input class="inp" id="la" value="'+esc(d.Amenities||"")+'"><div class="hint">Separate with semicolons.</div></div>';
+  else if(l.Category==="Restaurant")extra='<div class="two"><div><label class="lb">Cuisine</label><input class="inp" id="lcu" value="'+esc(d.CuisineType||"")+'"></div>'+
+    '<div><label class="lb">Price range</label><input class="inp" id="lpr" value="'+esc(d.PriceRange||"")+'"></div></div>';
+  else extra='<div class="two"><div><label class="lb">Type</label><input class="inp" id="lty" value="'+esc(d.Category||"")+'"></div>'+
+    '<div><label class="lb">Entrance fee</label><input class="inp" id="lfe" type="number" value="'+(d.EntranceFee||0)+'"></div></div>';
+  modal("Edit "+nameOf(id),
+   '<div class="frm"><div class="two"><div><label class="lb">Name</label><input class="inp" id="ln" value="'+esc(nameOf(id))+'"></div>'+
+   '<div><label class="lb">Status</label><select class="inp" id="lst">'+["Published","Pending Review","Delisted"].map(s=>'<option '+(l.ListingStatus===s?"selected":"")+'>'+s+'</option>').join("")+'</select></div></div>'+
+   '<div><label class="lb">Address</label><input class="inp" id="lad" value="'+esc(d.Address||"")+'"></div>'+extra+
+   '<div><label class="lb">Description</label><textarea class="inp" id="ld" rows="3">'+esc(d.Description||"")+'</textarea></div></div>',
+   '<button class="btn b-out" onclick="closeModal()">Cancel</button><button class="btn b-pri" onclick="saveListing(\''+id+'\')">Save changes</button>');
+}
+function saveListing(id){
+  const l=one("LISTING",id),d=detailOf(id),name=$("#ln").value.trim();
+  if(!name){toast("A listing needs a name","bad");return;}
+  update("LISTING",id,{ListingStatus:$("#lst").value});
+  const t=l.Category==="Hotel"?"HOTELS":l.Category==="Restaurant"?"RESTAURANTS":"ATTRACTIONS";
+  const pk=SCHEMA[t].pk,pv=d[pk];
+  const patch={Address:$("#lad").value.trim(),Description:$("#ld")?$("#ld").value.trim():d.Description};
+  if(l.Category==="Hotel"){patch.HotelName=name;patch.StarRating=Number($("#ls").value);patch.NightlyRate=Number($("#lr").value)||0;
+    patch.ContactInfo=$("#lc").value.trim();patch.Amenities=$("#la").value.trim();
+    patch.PriceRange=peso(patch.NightlyRate)+"–"+peso(Math.round(patch.NightlyRate*1.5));}
+  else if(l.Category==="Restaurant"){patch.RestaurantName=name;patch.CuisineType=$("#lcu").value.trim();patch.PriceRange=$("#lpr").value.trim();}
+  else{patch.AttractionName=name;patch.Category=$("#lty").value.trim();patch.EntranceFee=Number($("#lfe").value)||0;}
+  update(t,pv,patch);audit("Edited listing",name,id);closeModal();toast("Listing updated","good");render();
+}
+function newListing(){
+  const hosts=DB.USERS.filter(u=>u.Role!=="Traveler");
+  modal("New listing",
+   '<div class="frm"><div class="two"><div><label class="lb">Category</label>'+
+    '<select class="inp" id="ncat" onchange="newListingFields()"><option>Hotel</option><option>Restaurant</option><option>Attraction</option></select></div>'+
+    '<div><label class="lb">Host</label><select class="inp" id="nhost">'+hosts.map(u=>'<option value="'+u.UserID+'">@'+esc(u.UserName)+'</option>').join("")+'</select></div></div>'+
+   '<div><label class="lb">Name</label><input class="inp" id="nname"></div>'+
+   '<div><label class="lb">Address</label><input class="inp" id="naddr"></div>'+
+   '<div id="nfields"></div>'+
+   '<div><label class="lb">Description</label><textarea class="inp" id="ndesc" rows="2"></textarea></div>'+
+   '<div><label class="lb">Status</label><select class="inp" id="nstat"><option>Pending Review</option><option>Published</option></select></div>'+
+   '<div id="nlerr"></div></div>',
+   '<button class="btn b-out" onclick="closeModal()">Cancel</button><button class="btn b-org" onclick="createListing()">Create listing</button>');
+  newListingFields();
+}
+function newListingFields(){
+  const c=$("#ncat").value;
+  $("#nfields").innerHTML=c==="Hotel"
+   ?'<div class="three"><div><label class="lb">Stars</label><select class="inp" id="nstar"><option>5</option><option>4</option><option selected>3</option><option>2</option><option>1</option></select></div>'+
+    '<div><label class="lb">Nightly rate</label><input class="inp" id="nrate" type="number" value="3000"></div>'+
+    '<div><label class="lb">Contact</label><input class="inp" id="ncontact"></div></div>'+
+    '<div><label class="lb">Amenities</label><input class="inp" id="namen" placeholder="WiFi;Parking"></div>'
+   :c==="Restaurant"
+   ?'<div class="two"><div><label class="lb">Cuisine</label><input class="inp" id="ncui" value="Filipino"></div>'+
+    '<div><label class="lb">Price range</label><input class="inp" id="npr" value="₱250–₱500"></div></div>'
+   :'<div class="two"><div><label class="lb">Type</label><input class="inp" id="nty" value="Landmark"></div>'+
+    '<div><label class="lb">Entrance fee</label><input class="inp" id="nfee" type="number" value="0"></div></div>';
+}
+function createListing(){
+  const c=$("#ncat").value,name=$("#nname").value.trim(),addr=$("#naddr").value.trim(),desc=$("#ndesc").value.trim();
+  if(!name||!addr){$("#nlerr").innerHTML='<div class="err">Name and address are required.</div>';return;}
+  const lid=nextId("LISTING","L",3);
+  insert("LISTING",{ListingID:lid,Category:c,ListingStatus:$("#nstat").value,HostUserID:$("#nhost").value});
+  if(c==="Hotel"){const rate=Number($("#nrate").value)||0;
+    insert("HOTELS",{HotelID:nextId("HOTELS","H",3),ListingID:lid,HotelName:name,StarRating:Number($("#nstar").value),
+      PriceRange:peso(rate)+"–"+peso(Math.round(rate*1.5)),NightlyRate:rate,Description:desc,Amenities:$("#namen").value.trim(),
+      ImageURL:lid.toLowerCase()+".jpg",ContactInfo:$("#ncontact").value.trim(),Address:addr});}
+  else if(c==="Restaurant")
+    insert("RESTAURANTS",{RestaurantID:nextId("RESTAURANTS","R",3),ListingID:lid,RestaurantName:name,CuisineType:$("#ncui").value.trim(),
+      PriceRange:$("#npr").value.trim(),Address:addr,Rating:null,ImageURL:lid.toLowerCase()+".jpg"});
+  else
+    insert("ATTRACTIONS",{AttractionID:nextId("ATTRACTIONS","A",3),ListingID:lid,AttractionName:name,Category:$("#nty").value.trim(),
+      Address:addr,Description:desc,ImageURL:lid.toLowerCase()+".jpg",Rating:null,EntranceFee:Number($("#nfee").value)||0});
+  audit("Created listing",name,lid+" · "+c);closeModal();toast("Listing "+lid+" created","good");render();
+}
+function askDeleteListing(id){
+  const bk=sel("BOOKINGS",b=>b.ListingID===id).length,it=sel("TRIP_PLAN_ITEMS",i=>i.ListingID===id).length,rv=reviewsFor(id).length;
+  modal("Delete "+nameOf(id)+"?",
+   '<p style="margin:0 0 14px;font-size:12.5px;color:var(--ink-2)">This removes the listing, its detail row and everything pointing at it.</p>'+
+   '<div class="rowsp"><span class="mono">BOOKINGS</span><b>'+bk+'</b></div>'+
+   '<div class="rowsp"><span class="mono">TRIP_PLAN_ITEMS</span><b>'+it+'</b></div>'+
+   '<div class="rowsp"><span class="mono">REVIEWS</span><b>'+rv+'</b></div>'+
+   (bk?'<p style="margin:12px 0 0;font-size:12.5px;color:var(--ink-2)">Delisting keeps the booking history and just hides the listing from search.</p>':''),
+   '<button class="btn b-out" onclick="closeModal()">Cancel</button>'+
+   (bk?'<button class="btn b-blue" onclick="closeModal();setListing(\''+id+'\',\'Delisted\')">Delist instead</button>':'')+
+   '<button class="btn b-red" onclick="doDeleteListing(\''+id+'\')">Delete anyway</button>');
+}
+function purgeListing(id){
+  const l=one("LISTING",id),d=detailOf(id);
+  reviewsFor(id).forEach(r=>purgeReview(r.ReviewID));
+  sel("BOOKINGS",b=>b.ListingID===id).forEach(b=>remove("BOOKINGS",b.BookingID));
+  sel("TRIP_PLAN_ITEMS",i=>i.ListingID===id).forEach(i=>update("TRIP_PLAN_ITEMS",i.ItemID,{ListingID:null,ItemType:"Custom"}));
+  sel("PHOTOS",p=>p.ListingID===id).forEach(p=>remove("PHOTOS",p.PhotoID));
+  if(d){const t=l.Category==="Hotel"?"HOTELS":l.Category==="Restaurant"?"RESTAURANTS":"ATTRACTIONS";remove(t,d[SCHEMA[t].pk]);}
+  remove("LISTING",id);
+}
+function doDeleteListing(id){const n=nameOf(id);purgeListing(id);audit("Deleted listing",n,id);closeModal();toast("Listing removed","good");render();}
+function expListings(){
+  const rows=DB.LISTING.map(l=>({ListingID:l.ListingID,Name:nameOf(l.ListingID),Category:l.Category,Status:l.ListingStatus,
+    Host:(one("USERS",l.HostUserID)||{}).UserName||"",Address:addrOf(l.ListingID),Price:priceOf(l.ListingID),Rating:ratingFor(l.ListingID).avg||""}));
+  download("listings.csv",csv(rows,["ListingID","Name","Category","Status","Host","Address","Price","Rating"]),"text/csv");
+}
+
+function vBookings(){
+  const q=F.q.toLowerCase();
+  let rows=DB.BOOKINGS.filter(b=>!F.bstat||b.BookingStatus===F.bstat)
+    .filter(b=>!q||(b.BookingID+" "+nameOf(b.ListingID)+" "+((one("USERS",b.UserID)||{}).UserName||"")).toLowerCase().includes(q))
+    .sort((a,b)=>b.BookingID.localeCompare(a.BookingID));
+  const unsettled=sel("BOOKINGS",b=>b.BookingStatus==="Confirmed"&&b.CheckOutDate<today());
+  const val=rows.filter(b=>b.BookingStatus!=="Cancelled").reduce((s,b)=>s+Number(b.TotalPrice),0);
+  return '<div class="grid g4" style="margin-bottom:16px">'+
+    kpi("Bookings shown",rows.length,"of "+DB.BOOKINGS.length+" total")+
+    kpi("Value shown",peso(val),"excludes cancelled")+
+    kpi("Completed",sel("BOOKINGS",b=>b.BookingStatus==="Completed").length,"stays finished")+
+    kpi("Past check-out",unsettled.length,unsettled.length?"still marked Confirmed":"all settled",unsettled.length?"warn":"good")+
+   '</div>'+
+   tools(searchBox("Search booking, guest or property")+
+    selectBox("bstat",[["","All statuses"],["Confirmed","Confirmed"],["Requested","Requested"],["Completed","Completed"],["Cancelled","Cancelled"]])+
+    '<span class="sp"></span>'+
+    (unsettled.length?'<button class="btn b-org b-sm" onclick="settleAll()">Complete '+unsettled.length+' past stay'+(unsettled.length>1?"s":"")+'</button>':'')+
+    '<button class="btn b-out b-sm" onclick="expBookings()"><svg class="i"><use href="#down"/></svg> Export CSV</button>')+
+   '<div class="panel"><div class="scroll">'+(rows.length?
+    '<table class="dt"><thead><tr><th>Booking</th><th>Guest</th><th>Property</th><th>Dates</th><th>Guests</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>'+
+    rows.map(b=>{const u=one("USERS",b.UserID),late=b.BookingStatus==="Confirmed"&&b.CheckOutDate<today();
+     return '<tr><td><b class="mono">'+b.BookingID+'</b><div class="tiny">'+esc(b.PaymentRef||"")+'</div></td>'+
+      '<td>'+(u?'<div class="row"><span class="av" style="width:26px;height:26px;font-size:10px">'+ini(u)+'</span>@'+esc(u.UserName)+'</div>':'<span class="tiny">—</span>')+'</td>'+
+      '<td><div class="row">'+thumb(b.ListingID)+'<div><b>'+esc(nameOf(b.ListingID))+'</b><div class="tiny mono">'+b.ListingID+'</div></div></div></td>'+
+      '<td>'+fdate(b.CheckInDate)+' → '+fdate(b.CheckOutDate)+'<div class="tiny">'+(b.CheckInDate===b.CheckOutDate?'same day':nights(b.CheckInDate,b.CheckOutDate)+' nights')+(late?' · past check-out':'')+'</div></td>'+
+      '<td>'+b.NumGuests+'</td><td class="money">'+peso(b.TotalPrice)+'</td><td>'+statusTag(b.BookingStatus)+'</td>'+
+      '<td><div class="acts">'+
+       (b.BookingStatus==="Requested"?'<button class="btn b-org b-sm" onclick="setBooking(\''+b.BookingID+'\',\'Confirmed\')">Confirm</button>':'')+
+       (b.BookingStatus==="Confirmed"?'<button class="btn b-blue b-sm" onclick="setBooking(\''+b.BookingID+'\',\'Completed\')">Complete</button>':'')+
+       (b.BookingStatus!=="Cancelled"?'<button class="btn b-out b-sm" onclick="setBooking(\''+b.BookingID+'\',\'Cancelled\')">Cancel</button>':
+         '<button class="btn b-out b-sm" onclick="setBooking(\''+b.BookingID+'\',\'Confirmed\')">Reinstate</button>')+
+       '<button class="btn b-blue b-sm" onclick="editBooking(\''+b.BookingID+'\')"><svg class="i"><use href="#edit"/></svg></button>'+
+       '<button class="btn b-red b-sm" onclick="delBooking(\''+b.BookingID+'\')"><svg class="i"><use href="#trash"/></svg></button>'+
+      '</div></td></tr>';}).join("")+'</tbody></table>'
+    :empty("cal","No booking matches","Try another status or search term."))+'</div></div>';
+}
+function setBooking(id,st){update("BOOKINGS",id,{BookingStatus:st});audit("Set booking "+st.toLowerCase(),id,nameOf(one("BOOKINGS",id).ListingID));toast("Booking "+id+" is now "+st,"good");render();}
+function settleAll(){
+  const u=sel("BOOKINGS",b=>b.BookingStatus==="Confirmed"&&b.CheckOutDate<today());
+  u.forEach(b=>update("BOOKINGS",b.BookingID,{BookingStatus:"Completed"}));
+  audit("Completed stays",u.length+" bookings","bulk action");toast(u.length+" bookings completed","good");render();
+}
+function editBooking(id){
+  const b=one("BOOKINGS",id);
+  modal("Edit "+id,
+   '<div class="frm"><div class="two"><div><label class="lb">Check-in</label><input class="inp" type="date" id="bi" value="'+b.CheckInDate+'"></div>'+
+   '<div><label class="lb">Check-out</label><input class="inp" type="date" id="bo" value="'+b.CheckOutDate+'"></div></div>'+
+   '<div class="two"><div><label class="lb">Guests</label><input class="inp" type="number" min="1" id="bg" value="'+b.NumGuests+'"></div>'+
+   '<div><label class="lb">Total</label><input class="inp" type="number" id="bt" value="'+b.TotalPrice+'"></div></div>'+
+   '<div><label class="lb">Status</label><select class="inp" id="bs">'+["Confirmed","Requested","Completed","Cancelled"].map(s=>'<option '+(b.BookingStatus===s?"selected":"")+'>'+s+'</option>').join("")+'</select></div>'+
+   '<div id="berr"></div></div>',
+   '<button class="btn b-out" onclick="closeModal()">Cancel</button><button class="btn b-pri" onclick="saveBooking(\''+id+'\')">Save changes</button>');
+}
+function saveBooking(id){
+  const b=one("BOOKINGS",id),i=$("#bi").value,o=$("#bo").value,st=$("#bs").value;
+  const hotel=((one("LISTING",b.ListingID)||{}).Category||"Hotel")==="Hotel";
+  if(hotel?!(o>i):(o<i)){$("#berr").innerHTML='<div class="err">'+(hotel?"Check-out must be after check-in.":"The end date cannot be before the start date.")+'</div>';return;}
+  const clash=sel("BOOKINGS",x=>x.ListingID===b.ListingID&&x.BookingID!==id&&
+    (x.BookingStatus==="Confirmed"||x.BookingStatus==="Completed")&&i<x.CheckOutDate&&o>x.CheckInDate);
+  if(clash.length&&st!=="Cancelled"){$("#berr").innerHTML='<div class="err">Those dates clash with '+clash[0].BookingID+'.</div>';return;}
+  update("BOOKINGS",id,{CheckInDate:i,CheckOutDate:o,NumGuests:Number($("#bg").value)||1,TotalPrice:Number($("#bt").value)||0,BookingStatus:st});
+  audit("Edited booking",id,"");closeModal();toast("Booking updated","good");render();
+}
+function delBooking(id){if(!confirm("Delete booking "+id+"?"))return;remove("BOOKINGS",id);audit("Deleted booking",id,"");toast("Booking removed","good");render();}
+function expBookings(){
+  const rows=DB.BOOKINGS.map(b=>Object.assign({},b,{Guest:(one("USERS",b.UserID)||{}).UserName||"",Property:nameOf(b.ListingID)}));
+  download("bookings.csv",csv(rows,["BookingID","Guest","Property","CheckInDate","CheckOutDate","NumGuests","TotalPrice","BookingStatus","PaymentRef"]),"text/csv");
+}
+
+function vTrips(){
+  const q=F.q.toLowerCase();
+  const rows=DB.TRIP_PLANS.filter(t=>!q||(t.TripName+" "+((one("USERS",t.UserID)||{}).UserName||"")).toLowerCase().includes(q));
+  return tools(searchBox("Search trip or traveler")+'<span class="sp"></span><span class="tiny">'+rows.length+' plans</span>')+
+   '<div class="panel"><div class="scroll">'+(rows.length?
+   '<table class="dt"><thead><tr><th>Trip</th><th>Traveler</th><th>Dates</th><th>Stops</th><th>Linked</th><th>Status</th><th></th></tr></thead><tbody>'+
+   rows.map(t=>{const items=sel("TRIP_PLAN_ITEMS",i=>i.TripID===t.TripID);
+    return '<tr><td><b>'+esc(t.TripName)+'</b><div class="tiny mono">'+t.TripID+'</div></td>'+
+     '<td>@'+esc((one("USERS",t.UserID)||{}).UserName||"—")+'</td>'+
+     '<td>'+fdate(t.StartTime)+' → '+fdate(t.EndTime)+'</td><td>'+items.length+'</td>'+
+     '<td>'+items.filter(i=>i.ListingID).length+' of '+items.length+'</td><td>'+statusTag(t.TripStatus)+'</td>'+
+     '<td><div class="acts"><button class="btn b-blue b-sm" onclick="viewTrip(\''+t.TripID+'\')">Stops</button>'+
+      '<button class="btn b-red b-sm" onclick="delTrip(\''+t.TripID+'\')"><svg class="i"><use href="#trash"/></svg></button></div></td></tr>';}).join("")+
+   '</tbody></table>':empty("map","No trip plans"))+'</div></div>';
+}
+function viewTrip(id){
+  const t=one("TRIP_PLANS",id),items=sel("TRIP_PLAN_ITEMS",i=>i.TripID===id).sort((a,b)=>String(a.StartTime).localeCompare(String(b.StartTime)));
+  modal(t.TripName,
+   '<div class="rowsp"><span>Traveler</span><b>@'+esc((one("USERS",t.UserID)||{}).UserName||"—")+'</b></div>'+
+   '<div class="rowsp"><span>Dates</span><b>'+fdate(t.StartTime)+' → '+fdate(t.EndTime)+'</b></div>'+
+   '<div class="rowsp"><span>Notes</span><b>'+esc(t.Notes||"—")+'</b></div><div class="divider"></div>'+
+   (items.length?items.map(i=>'<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)">'+
+     (i.ListingID?thumb(i.ListingID):'<div class="thumb city" style="opacity:.6"><svg class="i"><use href="#pin"/></svg></div>')+
+     '<div style="flex:1"><b style="font-size:12.5px">'+esc(i.ItemName)+'</b><div class="tiny">'+esc(i.ItemType)+
+      (i.ListingID?' · <span class="mono">'+i.ListingID+'</span>':' · not linked')+(i.Notes?' · '+esc(i.Notes):'')+'</div></div>'+
+     '<span class="tiny">'+(i.StartTime?fdt(i.StartTime).split(",").slice(-1)[0]:"")+'</span></div>').join("")
+    :'<div class="tiny">No stops added.</div>'),
+   '<button class="btn b-out" onclick="closeModal()">Close</button>');
+}
+function delTrip(id){
+  if(!confirm("Delete this trip plan and its stops?"))return;
+  sel("TRIP_PLAN_ITEMS",i=>i.TripID===id).forEach(i=>remove("TRIP_PLAN_ITEMS",i.ItemID));
+  const n=one("TRIP_PLANS",id).TripName;remove("TRIP_PLANS",id);
+  audit("Deleted trip plan",n,id);toast("Trip plan removed","good");render();
+}
+
+function vReviews(){
+  const q=F.q.toLowerCase();
+  let rows=DB.REVIEWS.filter(r=>F.rvf==="all"||(F.rvf==="flag"&&r.Flagged)||(F.rvf==="low"&&Number(r.Rating)<=3))
+    .filter(r=>!q||(r.Title+" "+r.ReviewText+" "+((one("USERS",r.UserID)||{}).UserName||"")).toLowerCase().includes(q))
+    .sort((a,b)=>(b.Flagged?1:0)-(a.Flagged?1:0)||String(b.ReviewDate).localeCompare(String(a.ReviewDate)));
+  const avg=DB.REVIEWS.length?(DB.REVIEWS.reduce((s,r)=>s+Number(r.Rating),0)/DB.REVIEWS.length).toFixed(2):"—";
+  return '<div class="grid g3" style="margin-bottom:16px">'+
+   kpi("Total reviews",DB.REVIEWS.length,"across every listing")+
+   kpi("Average rating",avg,"out of 5")+
+   kpi("Reported",sel("REVIEWS",r=>r.Flagged).length,sel("REVIEWS",r=>r.Flagged).length?"hidden from travelers":"none reported",sel("REVIEWS",r=>r.Flagged).length?"bad":"good")+
+  '</div>'+
+  tools(searchBox("Search title, text or author")+seg("rvf",[["all","All"],["flag","Reported"],["low","3 stars or less"]])+
+   '<span class="sp"></span><button class="btn b-out b-sm" onclick="expReviews()"><svg class="i"><use href="#down"/></svg> Export CSV</button>')+
+  '<div class="panel"><div class="scroll">'+(rows.length?
+   '<table class="dt"><thead><tr><th>Review</th><th>Author</th><th>About</th><th>Rating</th><th>Photos</th><th></th></tr></thead><tbody>'+
+   rows.map(r=>{const lid=listingOfReview(r.ReviewID),ph=sel("PHOTOS",p=>p.ReviewID===r.ReviewID).length;
+    return '<tr class="'+(r.Flagged?"flag":"")+'"><td style="max-width:330px">'+
+     '<b>'+esc(r.Title)+'</b>'+(r.Flagged?' <span class="tag red">Reported</span>':'')+
+     '<div class="tiny" style="margin:3px 0">'+esc(r.ReviewText.slice(0,110))+(r.ReviewText.length>110?"…":"")+'</div>'+
+     '<div class="tiny mono">'+r.ReviewID+' · '+fdate(r.ReviewDate)+'</div></td>'+
+     '<td>@'+esc((one("USERS",r.UserID)||{}).UserName||"—")+'</td>'+
+     '<td>'+(lid?'<b>'+esc(nameOf(lid))+'</b><div class="tiny mono">'+lid+'</div>':'<span class="tiny">—</span>')+'</td>'+
+     '<td><span class="stars">'+stars(r.Rating)+'</span></td><td>'+ph+'</td>'+
+     '<td><div class="acts">'+
+      (r.Flagged?'<button class="btn b-blue b-sm" onclick="unflag(\'REVIEWS\',\''+r.ReviewID+'\')">Restore</button>'
+        :'<button class="btn b-out b-sm" onclick="flag(\'REVIEWS\',\''+r.ReviewID+'\')"><svg class="i"><use href="#eyeoff"/></svg> Hide</button>')+
+      '<button class="btn b-red b-sm" onclick="delReview(\''+r.ReviewID+'\')"><svg class="i"><use href="#trash"/></svg></button></div></td></tr>';}).join("")+
+   '</tbody></table>':empty("star","No review matches"))+'</div></div>';
+}
+function flag(t,id){update(t,id,{Flagged:true});audit("Hid content",t+" "+id,"");toast("Hidden from travelers","good");render();}
+function unflag(t,id){update(t,id,{Flagged:false});audit("Restored content",t+" "+id,"");toast("Restored","good");render();}
+function purgeReview(id){
+  const b=bridgeOf(id);if(b)remove(b,id);
+  sel("PHOTOS",p=>p.ReviewID===id).forEach(p=>remove("PHOTOS",p.PhotoID));
+  remove("REVIEWS",id);
+}
+function delReview(id){
+  const r=one("REVIEWS",id);
+  if(!confirm("Delete review "+id+" and anything attached to it?"))return;
+  purgeReview(id);audit("Deleted review",r.Title,id);toast("Review removed","good");render();
+}
+function expReviews(){
+  const rows=DB.REVIEWS.map(r=>Object.assign({},r,{Author:(one("USERS",r.UserID)||{}).UserName||"",About:nameOf(listingOfReview(r.ReviewID))}));
+  download("reviews.csv",csv(rows,["ReviewID","Author","About","Rating","Title","ReviewText","ReviewDate","HelpfulCount","Flagged"]),"text/csv");
+}
+
+function vForum(){
+  const q=F.q.toLowerCase();
+  const posts=DB.FORUM_POSTS.filter(p=>!q||(p.Title+" "+p.PostText).toLowerCase().includes(q))
+    .sort((a,b)=>(b.Flagged?1:0)-(a.Flagged?1:0)||String(b.PostDate).localeCompare(String(a.PostDate)));
+  const reps=DB.FORUM_REPLIES.filter(r=>!q||r.ReplyText.toLowerCase().includes(q))
+    .sort((a,b)=>String(b.ReplyDate).localeCompare(String(a.ReplyDate)));
+  return '<div class="grid g3" style="margin-bottom:16px">'+
+   kpi("Discussions",DB.FORUM_POSTS.length,sel("FORUM_POSTS",p=>p.Flagged).length+" reported")+
+   kpi("Replies",DB.FORUM_REPLIES.length,sel("FORUM_REPLIES",r=>r.ParentMessageID).length+" nested")+
+   kpi("Attached photos",sel("PHOTOS",p=>p.PostID).length,"on posts")+
+  '</div>'+
+  tools(searchBox("Search posts and replies")+seg("fmt",[["posts","Discussions"],["replies","Replies"]])+'<span class="sp"></span>')+
+  (F.fmt==="posts"
+   ?'<div class="panel"><div class="scroll">'+(posts.length?
+     '<table class="dt"><thead><tr><th>Discussion</th><th>Author</th><th>Posted</th><th>Replies</th><th>Helpful</th><th></th></tr></thead><tbody>'+
+     posts.map(p=>{const n=sel("FORUM_REPLIES",r=>r.PostID===p.PostID).length;
+      return '<tr class="'+(p.Flagged?"flag":"")+'"><td style="max-width:380px"><b>'+esc(p.Title)+'</b>'+(p.Flagged?' <span class="tag red">Reported</span>':'')+
+       '<div class="tiny" style="margin:3px 0">'+esc(p.PostText.slice(0,120))+(p.PostText.length>120?"…":"")+'</div>'+
+       '<div class="tiny mono">'+p.PostID+'</div></td>'+
+       '<td>@'+esc((one("USERS",p.UserID)||{}).UserName||"—")+'</td><td>'+fdt(p.PostDate)+'</td><td>'+n+'</td><td>'+p.HelpfulCount+'</td>'+
+       '<td><div class="acts">'+
+        (p.Flagged?'<button class="btn b-blue b-sm" onclick="unflag(\'FORUM_POSTS\',\''+p.PostID+'\')">Restore</button>'
+          :'<button class="btn b-out b-sm" onclick="flag(\'FORUM_POSTS\',\''+p.PostID+'\')"><svg class="i"><use href="#eyeoff"/></svg> Hide</button>')+
+        '<button class="btn b-blue b-sm" onclick="viewPost(\''+p.PostID+'\')">Thread</button>'+
+        '<button class="btn b-red b-sm" onclick="delPost(\''+p.PostID+'\')"><svg class="i"><use href="#trash"/></svg></button></div></td></tr>';}).join("")+
+     '</tbody></table>':empty("chat","No discussions"))+'</div></div>'
+   :'<div class="panel"><div class="scroll">'+(reps.length?
+     '<table class="dt"><thead><tr><th>Reply</th><th>Author</th><th>Thread</th><th>In reply to</th><th>Posted</th><th></th></tr></thead><tbody>'+
+     reps.map(r=>'<tr><td style="max-width:400px">'+esc(r.ReplyText.slice(0,140))+'<div class="tiny mono">'+r.ReplyID+'</div></td>'+
+      '<td>@'+esc((one("USERS",r.UserID)||{}).UserName||"—")+'</td>'+
+      '<td>'+esc((one("FORUM_POSTS",r.PostID)||{}).Title||"—")+'</td>'+
+      '<td>'+(r.ParentMessageID?'<span class="mono">'+r.ParentMessageID+'</span>':'<span class="tiny">top level</span>')+'</td>'+
+      '<td>'+fdt(r.ReplyDate)+'</td>'+
+      '<td><div class="acts"><button class="btn b-red b-sm" onclick="delReply(\''+r.ReplyID+'\')"><svg class="i"><use href="#trash"/></svg></button></div></td></tr>').join("")+
+     '</tbody></table>':empty("chat","No replies"))+'</div></div>');
+}
+function viewPost(id){
+  const p=one("FORUM_POSTS",id);
+  const tree=(parent,depth)=>sel("FORUM_REPLIES",r=>r.PostID===id&&r.ParentMessageID===parent)
+    .sort((a,b)=>String(a.ReplyDate).localeCompare(String(b.ReplyDate)))
+    .map(r=>'<div style="margin-left:'+(depth*18)+'px;border-left:2px solid var(--line);padding:8px 0 8px 12px">'+
+      '<b style="font-size:12px">@'+esc((one("USERS",r.UserID)||{}).UserName||"—")+'</b> <span class="tiny mono">'+r.ReplyID+'</span>'+
+      '<div style="font-size:12.5px;color:var(--ink-2);margin-top:3px">'+esc(r.ReplyText)+'</div>'+
+      '<div class="tiny">'+fdt(r.ReplyDate)+' · 👍 '+r.HelpfulCount+'</div></div>'+tree(r.ReplyID,depth+1)).join("");
+  modal(p.Title,
+   '<div class="row" style="margin-bottom:10px"><span class="av">'+ini(one("USERS",p.UserID))+'</span>'+
+   '<div><b>@'+esc((one("USERS",p.UserID)||{}).UserName||"—")+'</b><div class="tiny">'+fdt(p.PostDate)+' · <span class="mono">'+p.PostID+'</span></div></div></div>'+
+   '<p style="font-size:13px;color:var(--ink-2);line-height:1.6;margin:0 0 12px">'+esc(p.PostText)+'</p>'+
+   '<div class="divider"></div>'+(tree(null,0)||'<div class="tiny">No replies yet.</div>'),
+   '<button class="btn b-out" onclick="closeModal()">Close</button>',true);
+}
+function purgePost(id){
+  sel("FORUM_REPLIES",r=>r.PostID===id).forEach(r=>remove("FORUM_REPLIES",r.ReplyID));
+  sel("PHOTOS",p=>p.PostID===id).forEach(p=>remove("PHOTOS",p.PhotoID));
+  remove("FORUM_POSTS",id);
+}
+function delPost(id){
+  const p=one("FORUM_POSTS",id);
+  if(!confirm("Delete this discussion with its replies and photos?"))return;
+  purgePost(id);audit("Deleted discussion",p.Title,id);toast("Discussion removed","good");render();
+}
+function delReply(id){
+  if(!confirm("Delete this reply? Replies nested under it are removed too."))return;
+  const kill=x=>{sel("FORUM_REPLIES",r=>r.ParentMessageID===x).forEach(r=>kill(r.ReplyID));remove("FORUM_REPLIES",x);};
+  kill(id);audit("Deleted reply",id,"");toast("Reply removed","good");render();
+}
+
+function vPhotos(){
+  const rows=DB.PHOTOS.filter(p=>!F.q||(p.Caption+" "+p.PhotoURL).toLowerCase().includes(F.q.toLowerCase()));
+  return tools(searchBox("Search caption or filename")+'<span class="sp"></span><span class="tiny">'+rows.length+' photos</span>')+
+   (rows.length?'<div class="grid g4">'+rows.map(p=>{
+     const owner=one("USERS",p.UserID),url=p.PhotoURL||"",isImg=/^(data:image\/|https?:\/\/)/.test(url);
+     return '<div class="panel"><div class="'+(isImg?"":(p.Skin||"city"))+'" style="height:110px;display:grid;place-items:center;color:rgba(255,255,255,.85);font-size:26px'+
+      (isImg?';background:url(&quot;'+esc(url)+'&quot;) center/cover;background-color:#eee':'')+'">'+
+      (isImg?'':'<svg class="i"><use href="#photo"/></svg>')+'</div><div class="pb" style="padding:12px">'+
+      '<b style="font-size:12.5px">'+esc(p.Caption||"Untitled")+'</b>'+
+      '<div class="tiny" style="margin:3px 0">'+(isImg?"Uploaded photo":esc(url))+'</div>'+
+      '<div class="row" style="margin-top:7px"><span class="tag">'+(p.ReplyID?"Reply "+p.ReplyID:p.PostID?"Post "+p.PostID:p.ReviewID?"Review "+p.ReviewID:p.ListingID?"Listing: "+esc(nameOf(p.ListingID)):"Unattached")+'</span>'+
+      '<span class="sp" style="flex:1"></span><span class="tiny">@'+esc(owner?owner.UserName:"—")+'</span></div>'+
+      '<button class="btn b-red b-sm b-full" style="margin-top:9px" onclick="delPhoto(\''+p.PhotoID+'\')">Delete</button>'+
+      '</div></div>';}).join("")+'</div>'
+    :'<div class="panel">'+empty("photo","No photos")+'</div>');
+}
+function delPhoto(id){remove("PHOTOS",id);audit("Deleted photo",id,"");toast("Photo removed","good");render();}
+
+function vReports(){
+  const active=sel("BOOKINGS",b=>b.BookingStatus!=="Cancelled");
+  const byMonth={};active.forEach(b=>{const k=String(b.CheckInDate).slice(0,7);byMonth[k]=(byMonth[k]||0)+Number(b.TotalPrice);});
+  const months=Object.keys(byMonth).sort().slice(-6);
+  const byListing={};active.forEach(b=>{byListing[b.ListingID]=(byListing[b.ListingID]||0)+Number(b.TotalPrice);});
+  const top=Object.entries(byListing).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const maxL=top.length?top[0][1]:1;
+  const rated=DB.LISTING.map(l=>({id:l.ListingID,r:ratingFor(l.ListingID)})).filter(x=>x.r.avg).sort((a,b)=>b.r.avg-a.r.avg).slice(0,6);
+  const dist=[5,4,3,2,1].map(s=>[s,sel("REVIEWS",r=>Number(r.Rating)===s).length]);
+  const maxD=Math.max(1,...dist.map(d=>d[1]));
+  const cats=["Hotel","Restaurant","Attraction"].map(c=>[c,sel("LISTING",l=>l.Category===c).length]);
+  const stat=["Published","Pending Review","Delisted"].map(s=>[s,sel("LISTING",l=>l.ListingStatus===s).length]);
+  const hosts={};DB.LISTING.forEach(l=>{hosts[l.HostUserID]=(hosts[l.HostUserID]||0)+1;});
+  const topHosts=Object.entries(hosts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const occ=DB.HOTELS.map(hh=>{
+    const n=sel("BOOKINGS",b=>b.ListingID===hh.ListingID&&b.BookingStatus!=="Cancelled")
+      .reduce((s,b)=>s+nights(b.CheckInDate,b.CheckOutDate),0);
+    return [hh.HotelName,n];}).sort((a,b)=>b[1]-a[1]);
+  const maxO=Math.max(1,...occ.map(o=>o[1]));
+  return '<div class="grid g2" style="margin-bottom:16px">'+
+   '<div class="panel"><div class="ph"><h4>Booking value by month</h4></div><div class="pb">'+
+    (months.length?cols(0,months.map(k=>[k.slice(5)+"/"+k.slice(2,4),byMonth[k]]),peso):'<div class="tiny">No data yet.</div>')+'</div></div>'+
+   '<div class="panel"><div class="ph"><h4>Rating distribution</h4><span class="sp"></span><span class="tiny">'+DB.REVIEWS.length+' reviews</span></div><div class="pb">'+
+    dist.map(d=>hbar(d[0]+" star"+(d[0]>1?"s":""),d[1],maxD,d[1],"amber")).join("")+'</div></div>'+
+  '</div><div class="grid g2" style="margin-bottom:16px">'+
+   '<div class="panel"><div class="ph"><h4>Top listings by booking value</h4></div><div class="pb">'+
+    (top.length?top.map(t=>hbar(nameOf(t[0]),t[1],maxL,peso(t[1]))).join(""):'<div class="tiny">No bookings yet.</div>')+'</div></div>'+
+   '<div class="panel"><div class="ph"><h4>Highest rated</h4></div><div class="pb">'+
+    (rated.length?rated.map(x=>hbar(nameOf(x.id),x.r.avg,5,x.r.avg.toFixed(1)+" ("+x.r.n+")","green")).join(""):'<div class="tiny">No ratings yet.</div>')+'</div></div>'+
+  '</div><div class="grid g3">'+
+   '<div class="panel"><div class="ph"><h4>Catalog mix</h4></div><div class="pb">'+
+    cats.map(c=>hbar(c[0],c[1],DB.LISTING.length,c[1])).join("")+'<div class="divider"></div>'+
+    stat.map(s=>'<div class="rowsp"><span>'+s[0]+'</span><b>'+s[1]+'</b></div>').join("")+'</div></div>'+
+   '<div class="panel"><div class="ph"><h4>Busiest hotels</h4><span class="sp"></span><span class="tiny">nights sold</span></div><div class="pb">'+
+    (occ.length?occ.map(o=>hbar(o[0],o[1],maxO,o[1]+"n")).join(""):'<div class="tiny">No hotels.</div>')+'</div></div>'+
+   '<div class="panel"><div class="ph"><h4>Hosts by listings</h4></div><div class="pb">'+
+    (topHosts.length?topHosts.map(t=>hbar("@"+((one("USERS",t[0])||{}).UserName||"—"),t[1],DB.LISTING.length,t[1])).join(""):'<div class="tiny">None.</div>')+
+    '<div class="divider"></div><div class="rowsp"><span>Travelers</span><b>'+sel("USERS",u=>u.Role==="Traveler").length+'</b></div>'+
+    '<div class="rowsp"><span>Hosts</span><b>'+sel("USERS",u=>u.Role==="Host").length+'</b></div>'+
+    '<div class="rowsp"><span>Administrators</span><b>'+sel("USERS",u=>u.Role==="Administrator").length+'</b></div></div></div>'+
+  '</div>';
+}
+
+function vTables(){
+  const t=F.tbl,cols_=SCHEMA[t].cols,rows=DB[t];
+  return '<div class="bar-tools" style="gap:6px">'+TABLES.map(x=>
+    '<button class="btn '+(F.tbl===x?"b-pri":"b-out")+' b-sm" style="font-family:ui-monospace,Menlo,monospace" onclick="F.tbl=\''+x+'\';render()">'+x+
+    ' <span style="opacity:.65">'+DB[x].length+'</span></button>').join("")+'</div>'+
+   tools('<b style="font-size:13.5px;font-family:ui-monospace,Menlo,monospace">'+t+'</b><span class="tiny">'+rows.length+' rows · '+cols_.length+' columns</span>'+
+    '<span class="sp"></span>'+
+    '<button class="btn b-out b-sm" onclick="download(\''+t+'.csv\',csv(DB[\''+t+'\'],SCHEMA[\''+t+'\'].cols),\'text/csv\')"><svg class="i"><use href="#down"/></svg> CSV</button>'+
+    '<button class="btn b-out b-sm" onclick="expAll()"><svg class="i"><use href="#down"/></svg> Whole database (JSON)</button>'+
+    '<button class="btn b-out b-sm" onclick="expSQL()"><svg class="i"><use href="#down"/></svg> SQL script</button>'+
+    '<button class="btn b-out b-sm" onclick="SBR.pull().then(()=>{load();render();toast(\'Refreshed from Supabase\',\'good\')})">Refresh from Supabase</button>')+
+   '<div class="panel"><div class="scroll">'+(rows.length?
+    '<table class="dt"><thead><tr>'+cols_.map(c=>'<th>'+c+(c===SCHEMA[t].pk?' <span style="color:var(--blue)">PK</span>':/ID$/.test(c)?' <span style="color:var(--orange)">FK</span>':'')+'</th>').join("")+'</tr></thead><tbody>'+
+    rows.map(r=>'<tr>'+cols_.map(c=>{let v=r[c];
+      if(v===null||v===undefined||v==="")return '<td style="color:#B9C2CB;font-size:11px">NULL</td>';
+      if(typeof v==="boolean")return '<td>'+(v?'<span class="tag red">true</span>':'<span class="tiny">false</span>')+'</td>';
+      v=String(v);return '<td'+(/ID$/.test(c)||c==="Password"?' class="mono"':'')+'>'+esc(v.length>52?v.slice(0,52)+"…":v)+'</td>';}).join("")+'</tr>').join("")+
+    '</tbody></table>':empty("db",t+" is empty"))+'</div></div>';
+}
+function expAll(){const c={};TABLES.forEach(t=>c[t]=DB[t]);download("travelmate.json",JSON.stringify(c,null,2),"application/json");}
+function expSQL(){
+  const type=c=>/ID$/.test(c)?"VARCHAR(10)":/Date|Time/.test(c)?"DATE":/Price|Rate|Fee|Rating|Count|Guests|Star/.test(c)?"DECIMAL(10,2)":/Text|Description|Notes|Amenities/.test(c)?"TEXT":"VARCHAR(255)";
+  let out="-- TravelMate schema and data\n\n";
+  TABLES.forEach(t=>{
+    out+="CREATE TABLE "+t+" (\n"+SCHEMA[t].cols.map(c=>"  "+c+" "+type(c)+(c===SCHEMA[t].pk?" PRIMARY KEY":"")).join(",\n")+"\n);\n\n";
+  });
+  TABLES.forEach(t=>{
+    DB[t].forEach(r=>{
+      const vals=SCHEMA[t].cols.map(c=>r[c]===null||r[c]===undefined||r[c]===""?"NULL":typeof r[c]==="number"?r[c]:typeof r[c]==="boolean"?(r[c]?1:0):"'"+String(r[c]).replace(/'/g,"''")+"'");
+      out+="INSERT INTO "+t+" ("+SCHEMA[t].cols.join(", ")+") VALUES ("+vals.join(", ")+");\n";
+    });
+    out+="\n";
+  });
+  download("travelmate.sql",out,"text/plain");
+}
+
+function vActivity(){
+  const q=F.q.toLowerCase();
+  const rows=DB._audit.filter(a=>!q||(a.Action+" "+a.Target+" "+a.Detail+" "+a.By).toLowerCase().includes(q));
+  return tools(searchBox("Search actions")+'<span class="sp"></span><span class="tiny">'+rows.length+' entries</span>'+
+    '<button class="btn b-out b-sm" onclick="download(\'activity.csv\',csv(DB._audit,[\'At\',\'By\',\'Action\',\'Target\',\'Detail\']),\'text/csv\')"><svg class="i"><use href="#down"/></svg> Export CSV</button>'+
+    '<button class="btn b-red b-sm" onclick="clearLog()">Clear log</button>')+
+   '<div class="panel"><div class="scroll">'+(rows.length?
+    '<table class="dt"><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Target</th><th>Detail</th></tr></thead><tbody>'+
+    rows.map(a=>'<tr><td class="mono">'+esc(a.At)+'</td><td>@'+esc(a.By)+'</td><td><b>'+esc(a.Action)+'</b></td>'+
+     '<td>'+esc(a.Target)+'</td><td class="tiny">'+esc(a.Detail)+'</td></tr>').join("")+'</tbody></table>'
+    :empty("shield","Nothing logged yet","Actions you take in this console appear here."))+'</div></div>';
+}
+function clearLog(){if(!confirm("Clear the activity log?"))return;fresh();DB._audit=[];save();toast("Log cleared");render();}
+
+const WATCH=[
+  ["USERS","UserID","New user registered",r=>"@"+r.UserName+" · "+r.Email],
+  ["BOOKINGS","BookingID","New booking",r=>r.BookingID+" · "+nameOf(r.ListingID)],
+  ["TRIP_PLANS","TripID","New trip plan",r=>r.TripName],
+  ["REVIEWS","ReviewID","New review",r=>r.Title],
+  ["FORUM_POSTS","PostID","New forum post",r=>r.Title],
+  ["LISTING","ListingID","Listing submitted",r=>nameOf(r.ListingID)]
+];
+function announce(old,nw){
+  let shown=0;
+  WATCH.forEach(w=>{
+    const seen=new Set((old[w[0]]||[]).map(r=>r[w[1]]));
+    (nw[w[0]]||[]).filter(r=>!seen.has(r[w[1]])).forEach(r=>{if(shown++<4)toast(w[2],"good",w[3](r));});
+  });
+}
+let RT=null;
+function scheduleRender(){
+  clearTimeout(RT);
+  const typing=()=>{const a=document.activeElement;return a&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName)&&!(a.closest&&a.closest(".search"));};
+  const go=()=>{if(!isAdmin())return;if($("#layer").innerHTML.trim()||typing()){RT=setTimeout(go,1200);return;}render();};
+  go();
+}
+function syncStore(){
+  let raw;try{raw=localStorage.getItem(KEY);}catch(e){return;}
+  if(!raw||raw===LAST)return;
+  let nw;try{nw=JSON.parse(raw);}catch(e){return;}
+  TABLES.forEach(t=>{if(!Array.isArray(nw[t]))nw[t]=[];});
+  if(!Array.isArray(nw._log))nw._log=[];if(!Array.isArray(nw._audit))nw._audit=[];
+  const old=DB;LAST=raw;DB=nw;
+  if(isAdmin())announce(old,nw);
+  scheduleRender();
+}
+window.addEventListener("storage",e=>{if(e.key===KEY||e.key===null)syncStore();if(e.key===TKEY||e.key===null)syncTraffic();});
+setInterval(()=>{syncStore();syncTraffic();},1000);
+
+load();
+render();
+SBR.init().then(()=>{load();render();}).catch(e=>toast("Supabase: "+e.message,"bad"));
+window.addEventListener("resize",()=>{const b=$("#burger");if(b)b.style.display=window.innerWidth<820?"inline-flex":"none";});
+</script>
+</body>
+</html>
