@@ -678,22 +678,30 @@ if(!isGuest){const s0=tripSig;sync(async()=>{
 // own. Pull the traveler's own bookings back from Supabase — like trips already do above —
 // and merge statuses in, so "Mark completed" / "Write review" reflect what the admin did.
 let bPulling=false,bPullAgain=false;
-function pullBookings(){
-  if(isGuest)return;
+async function pullBookings(){
+  if(isGuest){console.log('[pullBookings] skipped — browsing as guest, not logged in');return}
   if(bPulling){bPullAgain=true;return}
   bPulling=true;
-  return sync(async()=>{
+  try{
     const rows=await API.call('GET','/api/bookings');
-    if(!rows)return;
-    const byId={};D.bookings.forEach(b=>byId[b.id]=b);
-    let changed=false;
-    rows.forEach(r=>{
-      const ex=byId[r.id];
-      if(ex){if(ex.status!==r.status||ex.name!==r.name){Object.assign(ex,{status:r.status,name:r.name,kind:r.kind||ex.kind,loc:r.loc||ex.loc});changed=true}}
-      else{D.bookings.push({...r,ref:'',reviewed:0});changed=true}
-    });
-    if(changed){save();if(CUR==='confirm')renderBookings();if(CUR==='review')renderReview()}
-  }).finally(()=>{bPulling=false;if(bPullAgain){bPullAgain=false;pullBookings()}});
+    console.log('[pullBookings] fetched',rows&&rows.length,'bookings from Supabase',rows);
+    if(rows){
+      const byId={};D.bookings.forEach(b=>byId[b.id]=b);
+      let changed=false;
+      rows.forEach(r=>{
+        const ex=byId[r.id];
+        if(ex){if(ex.status!==r.status||ex.name!==r.name){Object.assign(ex,{status:r.status,name:r.name,kind:r.kind||ex.kind,loc:r.loc||ex.loc});changed=true}}
+        else{D.bookings.push({...r,ref:'',reviewed:0});changed=true}
+      });
+      if(changed){console.log('[pullBookings] statuses changed, re-rendering');save();if(CUR==='confirm')renderBookings();if(CUR==='review')renderReview()}
+    }
+  }catch(e){
+    console.error('[pullBookings] FAILED:',e);
+    if(e.status===401){LS.removeItem('tm_token');LS.removeItem('tm_session');location.replace('login.html?next=index.html&reason='+encodeURIComponent('Your session expired. Please log in again.'))}
+    else if(e.status!==404)toast('Could not refresh bookings: '+e.message,'warn');
+  }finally{
+    bPulling=false;if(bPullAgain){bPullAgain=false;pullBookings()}
+  }
 }
 pullBookings();
 addEventListener('focus',()=>{if(!document.hidden)pullBookings()});
