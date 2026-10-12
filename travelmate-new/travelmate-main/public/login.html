@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in or register — TravelMate</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="api.js"></script>
+<style>
+body{background:linear-gradient(180deg,#0770E3,#0194F3);min-height:100vh}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tabs button{flex:1;border:1px solid var(--line);border-radius:8px;padding:9px;font-weight:700;font-size:13px;color:var(--ink-2)}
+.tabs button.on{background:#EAF5FF;border-color:#BFE2FF;color:var(--tv-blue-dk)}
+.err{color:var(--tv-red);font-size:12.5px;font-weight:600;min-height:18px;margin:0}
+.pw{position:relative}.pw button{position:absolute;right:10px;top:10px;font-size:12px;font-weight:700;color:var(--tv-blue)}
+.terms{display:flex;gap:8px;font-size:12.5px;color:var(--ink-2);align-items:flex-start;cursor:pointer}
+</style>
+</head>
+<body>
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg"><symbol id="check" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></symbol></svg>
+<div class="tv-head deep"><div class="tv-bar"><div class="logo"><span class="mk">◈</span> TravelMate</div></div></div>
+<div class="wrap">
+  <div class="authwrap">
+    <div class="authcopy">
+      <h2>One account.<br>Stay, eat, explore.</h2>
+      <p>Log in or register to open TravelMate. Your trips, bookings and reviews stay with your account.</p>
+      <ul>
+        <li><svg class="i"><use href="#check"/></svg> Save trip plans and pick them up later</li>
+        <li><svg class="i"><use href="#check"/></svg> Book hotels, tables and experiences</li>
+        <li><svg class="i"><use href="#check"/></svg> Review the places you have actually visited</li>
+        <li><svg class="i"><use href="#check"/></svg> Publish your own hotel, restaurant or attraction</li>
+      </ul>
+    </div>
+    <div class="authcard">
+      <div class="tabs"><button type="button" id="t-login">Log in</button><button type="button" id="t-reg">Register</button></div>
+      <h3 id="ttl"></h3>
+      <p class="sw" id="sub"></p>
+      <form id="f" class="frm" novalidate>
+        <div class="two reg">
+          <div><label class="lb" for="fn">First name <span class="req">*</span></label><input class="inp" id="fn" autocomplete="given-name"></div>
+          <div><label class="lb" for="ln">Last name <span class="req">*</span></label><input class="inp" id="ln" autocomplete="family-name"></div>
+        </div>
+        <div class="reg"><label class="lb" for="dn">Display name <span class="req">*</span></label><input class="inp" id="dn" autocomplete="username"><p class="hint">Shown on your reviews and forum posts.</p></div>
+        <div><label class="lb" for="em">Email <span class="req">*</span></label><input class="inp" id="em" type="email" autocomplete="email"></div>
+        <div>
+          <label class="lb" for="pw">Password <span class="req">*</span></label>
+          <div class="pw"><input class="inp" id="pw" type="password"><button type="button" id="show">Show</button></div>
+          <div class="strength reg"><i style="width:0"></i></div>
+          <p class="hint reg">At least 8 characters with one number.</p>
+        </div>
+        <div class="reg"><label class="lb" for="pw2">Confirm password <span class="req">*</span></label><input class="inp" id="pw2" type="password" autocomplete="new-password"></div>
+        <label class="terms reg"><input type="checkbox" id="tc"> I agree to the Terms of Use and Privacy Policy</label>
+        <p class="err" id="err" role="alert"></p>
+        <button class="btn-primary" id="go" style="width:100%;min-height:46px"></button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+(()=>{
+const LS=localStorage,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const users=()=>JSON.parse(LS.getItem('tm_users')||'[]');
+if(LS.getItem('tm_token')&&LS.getItem('tm_session'))location.replace('index.html');
+let mode='login';
+async function hash(s){
+  try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  catch(e){let h=5381;for(const c of s)h=(h*33^c.charCodeAt(0))>>>0;return 'x'+h}
+}
+function setMode(m){
+  mode=m;const r=m==='register';
+  $$('.reg').forEach(e=>e.style.display=r?'':'none');
+  $('#t-login').classList.toggle('on',!r);$('#t-reg').classList.toggle('on',r);
+  $('#ttl').textContent=r?'Create your account':'Welcome back';
+  $('#sub').textContent=r?'Register once to start planning.':'Log in to open TravelMate.';
+  $('#go').textContent=r?'Create account':'Log in';
+  $('#pw').autocomplete=r?'new-password':'current-password';
+  $('#err').textContent='';
+}
+$('#t-login').onclick=()=>setMode('login');
+$('#t-reg').onclick=()=>setMode('register');
+$('#show').onclick=()=>{const p=$('#pw'),h=p.type==='password';p.type=h?'text':'password';$('#show').textContent=h?'Hide':'Show'};
+$('#pw').addEventListener('input',()=>{
+  const v=$('#pw').value,n=(v.length>=8)+/\d/.test(v)+/[A-Z]/.test(v)+/[^\w\s]/.test(v)+(v.length>=12),bar=$('.strength i');
+  bar.style.width=(n*20)+'%';bar.style.background=n<3?'var(--tv-red)':n<4?'var(--tv-yellow)':'var(--tv-green)';
+});
+$('#f').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const err=m=>{$('#err').textContent=m};err('');
+  const em=$('#em').value.trim().toLowerCase(),pw=$('#pw').value;
+  if(!/^\S+@\S+\.\S+$/.test(em))return err('Enter a valid email address.');
+  if(mode==='register'){
+    if(!$('#fn').value.trim()||!$('#ln').value.trim())return err('Enter your first and last name.');
+    if(!/^[\w.]{3,20}$/.test($('#dn').value.trim()))return err('Display name: 3–20 letters, numbers, _ or .');
+    if(pw.length<8||!/\d/.test(pw))return err('Password needs 8+ characters and a number.');
+    if(pw!==$('#pw2').value)return err('Passwords do not match.');
+    if(!$('#tc').checked)return err('Please accept the Terms of Use to continue.');
+  }
+  const btn=$('#go');btn.disabled=true;
+  try{
+    const res=mode==='login'
+      ?await API.call('POST','/api/login',{email:em,password:pw})
+      :await API.call('POST','/api/register',{first:$('#fn').value.trim(),last:$('#ln').value.trim(),display:$('#dn').value.trim(),email:em,password:pw});
+    LS.setItem('tm_token',res.token);
+    LS.setItem('tm_users',JSON.stringify([res.user]));
+    LS.setItem('tm_session',res.user.email);
+    location.replace(res.user.role==='Administrator'?'admin.html':'index.html');
+  }catch(x){err(x.message==='Failed to fetch'?'Cannot reach the server. Is it running?':x.message);btn.disabled=false}
+});
+setMode('login');
+})();
+</script>
+</body>
+</html>
